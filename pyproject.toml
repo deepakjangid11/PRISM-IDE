@@ -1,17 +1,24 @@
 [project]
 name = "prism-ide"
 version = "0.1.0"
-description = "Add your description here"
+description = "PRISM IDE - AI-powered developer intelligence and learning platform"
 readme = "README.md"
-authors = [
-    { name = "c language", email = "dj404729@gmail.com" }
-]
 requires-python = ">=3.14"
-dependencies = []
-
-[project.scripts]
-prism-ide = "prism_ide:main"
+dependencies = [
+    "pydantic-settings>=2.12.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.12.17,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "prism"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.4",
+]

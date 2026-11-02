@@ -10,7 +10,7 @@ def error_message_detail(error: Exception, error_detail: Any) -> str:
     error_message = (
         f"Error occurred in python script name "
         f"[{file_name}] line number [{line_number}] "
-        f"error message [{str(error)}]"
+        f"error message [{error!s}]"
     )
 
     return error_message
