@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI
 
+from prism.api.routes.project import router as project_router
 from prism.config.settings import Settings
 
 settings = Settings()
@@ -11,6 +12,8 @@ app = FastAPI(
     version="0.1.0",
     debug=settings.debug,
 )
+
+app.include_router(project_router)
 
 
 @app.get("/health", tags=["Health"])
