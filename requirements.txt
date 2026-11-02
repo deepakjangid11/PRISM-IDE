@@ -1,0 +1,39 @@
+
+# Local PRISM package
+-e .
+
+# API and application server
+fastapi
+uvicorn[standard]
+httpx
+python-multipart
+
+# Configuration and validation
+pydantic-settings
+python-dotenv
+
+# Database and migrations
+sqlalchemy
+alembic
+pymysql
+
+# AI and LLM integration
+openai
+tiktoken
+tenacity
+
+# RAG and vector search
+chromadb
+
+# Code and project analysis
+tree-sitter
+tree-sitter-python
+
+# Testing
+pytest
+pytest-cov
+pytest-asyncio
+
+# Code quality and type checking
+ruff
+mypy
