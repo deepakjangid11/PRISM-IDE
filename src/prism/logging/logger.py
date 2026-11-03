@@ -8,8 +8,7 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE = LOG_DIR / "prism.log"
 
 LOG_FORMAT = (
-    "%(asctime)s | %(levelname)s | "
-    "%(name)s | %(filename)s:%(lineno)d | %(message)s"
+    "%(asctime)s | %(levelname)s | %(name)s | %(filename)s:%(lineno)d | %(message)s"
 )
 
 

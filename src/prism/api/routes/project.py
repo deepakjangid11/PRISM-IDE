@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from typing import Any
 
@@ -7,6 +6,9 @@ from pydantic import BaseModel, Field
 
 from prism.context.project_context import build_project_context
 from prism.exceptions.custom_exception import CustomException
+from prism.intelligence.models.project_intelligence_models import (
+    ProjectIntelligence,
+)
 from prism.intelligence.project_intelligence import (
     build_project_intelligence,
 )
@@ -97,7 +99,9 @@ async def analyze_project_intelligence(
             result["summary"]["python_files_analyzed"],
         )
 
-        return result
+        if isinstance(result, ProjectIntelligence):
+            return result.model_dump()
+        return dict(result)
 
     except HTTPException:
         raise

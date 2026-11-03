@@ -1,4 +1,3 @@
-
 import logging
 from pathlib import Path
 
@@ -117,7 +116,7 @@ def test_scan_project_does_not_follow_symlink_directories(
 
     try:
         link_dir.symlink_to(actual_dir, target_is_directory=True)
-    except (OSError, NotImplementedError):
+    except OSError, NotImplementedError:
         pytest.skip("Directory symlinks are unavailable on this system")
 
     result = scan_project(tmp_path)

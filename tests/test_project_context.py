@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from prism.context.project_context import build_project_context

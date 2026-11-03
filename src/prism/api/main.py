@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 
 from prism.api.routes.project import router as project_router

@@ -1,10 +1,14 @@
-
 import ast
 import sys
 from pathlib import Path
 from typing import Any
 
 from prism.exceptions.custom_exception import CustomException
+from prism.intelligence.models.dependency_models import (
+    Dependency,
+    DependencyAnalysis,
+    FailedDependencyFile,
+)
 from prism.logging.logger import get_logger
 
 logger = get_logger(__name__)
@@ -62,7 +66,7 @@ def _resolve_relative_import(
 
 def analyze_project_dependencies(
     project_path: str | Path,
-) -> dict[str, Any]:
+) -> DependencyAnalysis:
     """Analyze local Python imports and cross-file dependencies."""
     root = Path(project_path).expanduser().resolve()
 
@@ -78,8 +82,7 @@ def analyze_project_dependencies(
             if path.is_file()
             and not path.is_symlink()
             and not any(
-                part in IGNORED_DIRECTORIES
-                for part in path.relative_to(root).parts
+                part in IGNORED_DIRECTORIES for part in path.relative_to(root).parts
             )
         )
 
@@ -137,9 +140,7 @@ def analyze_project_dependencies(
                                 )
 
                             if resolved_module:
-                                imported_modules[resolved_module] = (
-                                    node.lineno
-                                )
+                                imported_modules[resolved_module] = node.lineno
 
                 for imported_module, line_number in imported_modules.items():
                     resolved_file = module_map.get(imported_module)
@@ -168,19 +169,36 @@ def analyze_project_dependencies(
                     }
                 )
 
-        local_count = sum(
-            1 for dependency in dependencies if dependency["is_local"]
-        )
+        local_count = sum(1 for dependency in dependencies if dependency["is_local"])
 
-        result: dict[str, Any] = {
-            "project_path": root.as_posix(),
-            "total_python_files": len(python_files),
-            "total_dependencies": len(dependencies),
-            "local_dependencies": local_count,
-            "external_dependencies": len(dependencies) - local_count,
-            "dependencies": dependencies,
-            "failed_files": failed_files,
-        }
+        typed_dependencies = [
+            Dependency(
+                source_file=dep["source_file"],
+                imported_module=dep["imported_module"],
+                target_file=dep["target_file"],
+                is_local=dep["is_local"],
+                line=dep["line"],
+            )
+            for dep in dependencies
+        ]
+
+        typed_failed_files = [
+            FailedDependencyFile(
+                file_path=failed["file_path"],
+                error=failed["error"],
+            )
+            for failed in failed_files
+        ]
+
+        result = DependencyAnalysis(
+            project_path=root.as_posix(),
+            total_python_files=len(python_files),
+            total_dependencies=len(dependencies),
+            local_dependencies=local_count,
+            external_dependencies=len(dependencies) - local_count,
+            dependencies=typed_dependencies,
+            failed_files=typed_failed_files,
+        )
 
         logger.info(
             "Dependency analysis completed | files=%s | dependencies=%s "
@@ -195,6 +213,7 @@ def analyze_project_dependencies(
 
     except ValueError:
         raise
+
     except Exception as error:
         logger.exception("Project dependency analysis failed")
         raise CustomException(error, sys) from error

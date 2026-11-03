@@ -1,40 +1,40 @@
-
 import ast
 import sys
-from typing import Any
+from pathlib import Path
 
 from prism.exceptions.custom_exception import CustomException
+from prism.intelligence.models.relationship_models import (
+    ClassRelationship,
+    CodeRelationshipAnalysis,
+    FunctionCall,
+    FunctionRelationship,
+)
 from prism.logging.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 class CodeRelationshipVisitor(ast.NodeVisitor):
-    """Extract definitions, inheritance, and function-call relationships."""
+    """Extract class, function, and function-call relationships."""
 
     def __init__(self) -> None:
-        self.functions: list[dict[str, Any]] = []
-        self.classes: list[dict[str, Any]] = []
-        self.function_calls: list[dict[str, Any]] = []
-        self.scope: list[str] = []
-
-    def _current_scope(self) -> str:
-        return ".".join(self.scope) if self.scope else "<module>"
+        self.classes: list[ClassRelationship] = []
+        self.functions: list[FunctionRelationship] = []
+        self.function_calls: list[FunctionCall] = []
+        self._scope_stack: list[str] = []
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
-        class_name = node.name
-
         self.classes.append(
-            {
-                "name": class_name,
-                "line": node.lineno,
-                "bases": [ast.unparse(base) for base in node.bases],
-            }
+            ClassRelationship(
+                name=node.name,
+                line=node.lineno,
+                bases=[ast.unparse(base) for base in node.bases],
+            )
         )
 
-        self.scope.append(class_name)
+        self._scope_stack.append(node.name)
         self.generic_visit(node)
-        self.scope.pop()
+        self._scope_stack.pop()
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         self._visit_function(node, is_async=False)
@@ -47,44 +47,52 @@ class CodeRelationshipVisitor(ast.NodeVisitor):
         node: ast.FunctionDef | ast.AsyncFunctionDef,
         is_async: bool,
     ) -> None:
-        qualified_name = ".".join([*self.scope, node.name])
+        qualified_name = ".".join([*self._scope_stack, node.name])
 
         self.functions.append(
-            {
-                "name": node.name,
-                "qualified_name": qualified_name,
-                "line": node.lineno,
-                "is_async": is_async,
-            }
+            FunctionRelationship(
+                name=node.name,
+                qualified_name=qualified_name,
+                line=node.lineno,
+                is_async=is_async,
+            )
         )
 
-        self.scope.append(node.name)
+        self._scope_stack.append(node.name)
         self.generic_visit(node)
-        self.scope.pop()
+        self._scope_stack.pop()
 
     def visit_Call(self, node: ast.Call) -> None:
+        caller = self._current_scope()
+
         if isinstance(node.func, ast.Name):
-            called_function = node.func.id
+            callee = node.func.id
         elif isinstance(node.func, ast.Attribute):
-            called_function = ast.unparse(node.func)
+            callee = ast.unparse(node.func)
         else:
-            called_function = ast.unparse(node.func)
+            callee = ast.unparse(node.func)
 
         self.function_calls.append(
-            {
-                "caller": self._current_scope(),
-                "callee": called_function,
-                "line": node.lineno,
-            }
+            FunctionCall(
+                caller=caller,
+                callee=callee,
+                line=node.lineno,
+            )
         )
 
         self.generic_visit(node)
+
+    def _current_scope(self) -> str:
+        if not self._scope_stack:
+            return "<module>"
+
+        return ".".join(self._scope_stack)
 
 
 def analyze_code_relationships(
     source_code: str,
     file_path: str = "<unknown>",
-) -> dict[str, Any]:
+) -> CodeRelationshipAnalysis:
     """Analyze Python definitions, inheritance, and function calls."""
     logger.info("Code relationship analysis started | file=%s", file_path)
 
@@ -93,12 +101,12 @@ def analyze_code_relationships(
         visitor = CodeRelationshipVisitor()
         visitor.visit(tree)
 
-        result: dict[str, Any] = {
-            "file_path": file_path,
-            "classes": visitor.classes,
-            "functions": visitor.functions,
-            "function_calls": visitor.function_calls,
-        }
+        result = CodeRelationshipAnalysis(
+            file_path=file_path,
+            classes=visitor.classes,
+            functions=visitor.functions,
+            function_calls=visitor.function_calls,
+        )
 
         logger.info(
             "Code relationship analysis completed | file=%s | classes=%s "
@@ -118,13 +126,46 @@ def analyze_code_relationships(
             error.lineno,
         )
         raise ValueError(
-            f"Invalid Python syntax in {file_path} "
-            f"at line {error.lineno}: {error.msg}"
+            f"Invalid Python syntax in {file_path} at line {error.lineno}: {error.msg}"
         ) from error
 
     except Exception as error:
         logger.exception(
             "Code relationship analysis failed | file=%s",
             file_path,
+        )
+        raise CustomException(error, sys) from error
+
+
+def analyze_python_file(
+    file_path: str | Path,
+) -> CodeRelationshipAnalysis:
+    """Analyze a Python file and return its relationships."""
+    path = Path(file_path)
+
+    if not path.is_file():
+        raise ValueError(f"Invalid Python file: {path}")
+
+    if path.suffix != ".py":
+        raise ValueError(f"File is not a Python file: {path}")
+
+    try:
+        source_code = path.read_text(encoding="utf-8")
+        return analyze_code_relationships(
+            source_code=source_code,
+            file_path=path.as_posix(),
+        )
+
+    except UnicodeDecodeError as error:
+        logger.warning(
+            "Python file is not valid UTF-8 | file=%s",
+            path,
+        )
+        raise ValueError(f"Unable to decode Python file as UTF-8: {path}") from error
+
+    except OSError as error:
+        logger.exception(
+            "Unable to read Python file | file=%s",
+            path,
         )
         raise CustomException(error, sys) from error

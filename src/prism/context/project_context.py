@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from typing import Any
 
@@ -23,18 +22,14 @@ def build_project_context(project_path: str | Path) -> dict[str, Any]:
             continue
 
         try:
-            analyzed_files.append(
-                analyze_python_file(root / relative_path)
-            )
+            analyzed_files.append(analyze_python_file(root / relative_path))
         except (ValueError, OSError) as error:
             logger.warning(
                 "Project file analysis failed | file=%s | error=%s",
                 relative_path,
                 error,
             )
-            failed_files.append(
-                {"file_path": relative_path, "error": str(error)}
-            )
+            failed_files.append({"file_path": relative_path, "error": str(error)})
 
     result: dict[str, Any] = {
         "project_path": root.as_posix(),

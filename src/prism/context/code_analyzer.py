@@ -1,4 +1,3 @@
-
 import ast
 import sys
 from pathlib import Path
@@ -91,8 +90,7 @@ def analyze_python_code(
             error.lineno,
         )
         raise ValueError(
-            f"Invalid Python syntax in {file_path} "
-            f"at line {error.lineno}: {error.msg}"
+            f"Invalid Python syntax in {file_path} at line {error.lineno}: {error.msg}"
         ) from error
 
     except Exception as error:
@@ -118,9 +116,7 @@ def analyze_python_file(
             "Python file is not valid UTF-8 | file=%s",
             path,
         )
-        raise ValueError(
-            f"Unable to decode Python file as UTF-8: {path}"
-        ) from error
+        raise ValueError(f"Unable to decode Python file as UTF-8: {path}") from error
 
     except OSError as error:
         logger.exception(

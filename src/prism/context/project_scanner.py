@@ -1,4 +1,3 @@
-
 import os
 import sys
 from pathlib import Path
@@ -47,9 +46,7 @@ def scan_project(project_path: str | Path) -> list[str]:
                 "Project scan rejected: path is not a directory | root=%s",
                 root,
             )
-            raise NotADirectoryError(
-                f"Project path is not a directory: {root}"
-            )
+            raise NotADirectoryError(f"Project path is not a directory: {root}")
 
         logger.info("Project scan started | root=%s", root)
 
@@ -101,7 +98,7 @@ def scan_project(project_path: str | Path) -> list[str]:
         )
         return discovered_files
 
-    except (FileNotFoundError, NotADirectoryError):
+    except FileNotFoundError, NotADirectoryError:
         raise
     except OSError as error:
         logger.exception("Project scan failed due to filesystem error")

@@ -1,4 +1,3 @@
-
 import pytest
 
 from prism.context.code_analyzer import analyze_python_code

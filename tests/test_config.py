@@ -1,4 +1,3 @@
-
 from prism.config.settings import Settings
 
 
