@@ -1,7 +1,15 @@
+from prism.intelligence.models.activity_metrics_models import ActivityMetrics
+from prism.intelligence.models.activity_session_models import (
+    ActivitySession,
+    ActivitySessionMetrics,
+)
 from prism.intelligence.models.dependency_models import (
     Dependency,
     DependencyAnalysis,
     FailedDependencyFile,
+)
+from prism.intelligence.models.developer_behavior_models import (
+    DeveloperActivity,
 )
 from prism.intelligence.models.project_intelligence_models import (
     ContextClass,
@@ -21,6 +29,9 @@ from prism.intelligence.models.relationship_models import (
 )
 
 __all__ = [
+    "ActivityMetrics",
+    "ActivitySession",
+    "ActivitySessionMetrics",
     "ClassRelationship",
     "CodeRelationshipAnalysis",
     "ContextClass",
@@ -30,6 +41,7 @@ __all__ = [
     "ContextMethod",
     "Dependency",
     "DependencyAnalysis",
+    "DeveloperActivity",
     "FailedDependencyFile",
     "FunctionCall",
     "FunctionRelationship",
