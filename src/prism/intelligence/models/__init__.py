@@ -9,7 +9,10 @@ from prism.intelligence.models.dependency_models import (
     FailedDependencyFile,
 )
 from prism.intelligence.models.developer_behavior_models import (
+    ActivityDistribution,
     DeveloperActivity,
+    DeveloperBehaviorInsights,
+    TestingHabits,
 )
 from prism.intelligence.models.project_intelligence_models import (
     ContextClass,
@@ -27,8 +30,18 @@ from prism.intelligence.models.relationship_models import (
     FunctionCall,
     FunctionRelationship,
 )
+from prism.intelligence.models.skill_models import (
+    DeveloperSkill,
+    DeveloperSkillProfile,
+    ProficiencyLevel,
+    RelationshipType,
+    SkillEvidence,
+    SkillGraphData,
+    SkillRelationship,
+)
 
 __all__ = [
+    "ActivityDistribution",
     "ActivityMetrics",
     "ActivitySession",
     "ActivitySessionMetrics",
@@ -42,10 +55,19 @@ __all__ = [
     "Dependency",
     "DependencyAnalysis",
     "DeveloperActivity",
+    "DeveloperBehaviorInsights",
+    "DeveloperSkill",
+    "DeveloperSkillProfile",
     "FailedDependencyFile",
     "FunctionCall",
     "FunctionRelationship",
+    "ProficiencyLevel",
     "ProjectContext",
     "ProjectIntelligence",
     "ProjectIntelligenceSummary",
+    "RelationshipType",
+    "SkillEvidence",
+    "SkillGraphData",
+    "SkillRelationship",
+    "TestingHabits",
 ]
