@@ -97,21 +97,37 @@ class MySQLSkillGraphRepository:
 
     def get_relationships(self) -> list[SkillRelationship]:
         """Return all directed skill relationships mapped to domain models."""
-        with session_scope(self.session_factory) as session:
-            # Query relationships with skills joined for canonical names
-            stmt = select(SkillRelationshipRecord)
-            records = session.scalars(stmt).all()
+        from sqlalchemy.orm import aliased
 
-            results: list[SkillRelationship] = []
-            for r in records:
-                from_name = self.get_skill_name_by_id(r.from_skill_id)
-                to_name = self.get_skill_name_by_id(r.to_skill_id)
-                if from_name and to_name:
-                    results.append(
-                        SkillRelationship(
-                            from_skill=from_name,
-                            to_skill=to_name,
-                            relationship_type=RelationshipType(r.relationship_type),
-                        )
-                    )
-            return results
+        with session_scope(self.session_factory) as session:
+            from_skill_alias = aliased(SkillRecord)
+            to_skill_alias = aliased(SkillRecord)
+
+            stmt = (
+                select(
+                    from_skill_alias.skill_name.label("from_name"),
+                    to_skill_alias.skill_name.label("to_name"),
+                    SkillRelationshipRecord.relationship_type,
+                )
+                .join(
+                    from_skill_alias,
+                    SkillRelationshipRecord.from_skill_id == from_skill_alias.skill_id,
+                )
+                .join(
+                    to_skill_alias,
+                    SkillRelationshipRecord.to_skill_id == to_skill_alias.skill_id,
+                )
+                .order_by(
+                    from_skill_alias.skill_name.asc(),
+                    to_skill_alias.skill_name.asc(),
+                )
+            )
+            rows = session.execute(stmt).all()
+            return [
+                SkillRelationship(
+                    from_skill=row.from_name,
+                    to_skill=row.to_name,
+                    relationship_type=RelationshipType(row.relationship_type),
+                )
+                for row in rows
+            ]

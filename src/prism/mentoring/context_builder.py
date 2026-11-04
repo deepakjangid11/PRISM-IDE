@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from prism.exceptions.custom_exception import CustomException
 from prism.intelligence.developer_behavior_analyzer import (
@@ -18,6 +21,9 @@ from prism.learning.learning_path_generator import LearningPathGenerator
 from prism.logging.logger import get_logger
 from prism.mentoring.models import MentorContext, MentorMode, MentorRequest
 
+if TYPE_CHECKING:
+    from prism.intelligence.developer_activity import ActivityRecorder
+
 logger = get_logger(__name__)
 
 
@@ -30,11 +36,13 @@ class MentorContextBuilder:
         behavior_analyzer: DeveloperBehaviorAnalyzer | None = None,
         gap_analyzer: KnowledgeGapAnalyzer | None = None,
         path_generator: LearningPathGenerator | None = None,
+        activity_recorder: ActivityRecorder | None = None,
     ) -> None:
         self.skill_tracker = skill_tracker or SkillTracker()
         self.behavior_analyzer = behavior_analyzer or DeveloperBehaviorAnalyzer()
         self.gap_analyzer = gap_analyzer or KnowledgeGapAnalyzer()
         self.path_generator = path_generator or LearningPathGenerator()
+        self.activity_recorder = activity_recorder
 
     def build_context(
         self,
@@ -61,10 +69,18 @@ class MentorContextBuilder:
                         proj_intel = raw_intel
 
             # 2. Behavior Insights
+            resolved_activities = activities
+            if resolved_activities is None and self.activity_recorder is not None:
+                resolved_activities = (
+                    self.activity_recorder.get_activities_for_developer(
+                        request.developer_id, request.project_path
+                    )
+                )
+
             behavior_insights = None
-            if activities:
+            if resolved_activities:
                 behavior_insights = self.behavior_analyzer.analyze(
-                    activities,
+                    resolved_activities,
                     developer_id=request.developer_id,
                     project_path=request.project_path,
                 )

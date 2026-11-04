@@ -11,6 +11,7 @@ from prism.storage.models.learning_records import (
     LearningProgressItemRecord,
     LearningProgressRecord,
 )
+from prism.storage.models.skill_records import SkillRecord
 from prism.storage.repositories.mysql_developer_repo import (
     MySQLDeveloperRepository,
 )
@@ -59,6 +60,16 @@ class MySQLLearningRepository:
             + progress.remaining_skills
         )
 
+        # Pre-resolve step skill IDs before entering transaction
+        step_id_map: dict[str, str] = {}
+        for step_name in steps:
+            s_id = self.graph_repo.get_skill_id_by_name(step_name)
+            if not s_id:
+                s_slug = step_name.lower().replace(" ", "_").replace("/", "_")
+                s_id = f"skill_{s_slug}"
+                self.graph_repo.register_skill(s_id, step_name)
+            step_id_map[step_name] = s_id
+
         with session_scope(self.session_factory) as session:
             # 1. Upsert learning_progress record
             stmt = select(LearningProgressRecord).where(
@@ -91,12 +102,7 @@ class MySQLLearningRepository:
             session.execute(del_stmt)
 
             for order, step_name in enumerate(steps, 1):
-                s_id = self.graph_repo.get_skill_id_by_name(step_name)
-                if not s_id:
-                    s_slug = step_name.lower().replace(" ", "_").replace("/", "_")
-                    s_id = f"skill_{s_slug}"
-                    self.graph_repo.register_skill(s_id, step_name)
-
+                s_id = step_id_map[step_name]
                 status = (
                     "completed"
                     if step_name in progress.completed_skills
@@ -150,24 +156,25 @@ class MySQLLearningRepository:
             if prog_record is None:
                 return None
 
-            # Fetch normalized items
+            # Fetch normalized items joined with SkillRecord to avoid N+1 queries
             items_stmt = (
-                select(LearningProgressItemRecord)
+                select(LearningProgressItemRecord, SkillRecord.skill_name)
+                .join(
+                    SkillRecord,
+                    LearningProgressItemRecord.skill_id == SkillRecord.skill_id,
+                )
                 .where(
                     LearningProgressItemRecord.progress_id == prog_record.progress_id
                 )
                 .order_by(LearningProgressItemRecord.step_order.asc())
             )
-            items = session.scalars(items_stmt).all()
+            rows = session.execute(items_stmt).all()
 
             completed_skills: list[str] = []
             in_progress_skills: list[str] = []
             remaining_skills: list[str] = []
 
-            for item in items:
-                skill_name = (
-                    self.graph_repo.get_skill_name_by_id(item.skill_id) or item.skill_id
-                )
+            for item, skill_name in rows:
                 if item.status == "completed":
                     completed_skills.append(skill_name)
                 elif item.status == "in_progress":
@@ -194,8 +201,14 @@ class MySQLLearningRepository:
         )
 
         with session_scope(self.session_factory) as session:
-            stmt = select(LearningProgressHistoryRecord).where(
-                LearningProgressHistoryRecord.developer_id == dev_id
+            stmt = (
+                select(LearningProgressHistoryRecord, SkillRecord.skill_name)
+                .join(
+                    SkillRecord,
+                    LearningProgressHistoryRecord.target_goal_skill_id
+                    == SkillRecord.skill_id,
+                )
+                .where(LearningProgressHistoryRecord.developer_id == dev_id)
             )
             if target_skill_id:
                 stmt = stmt.where(
@@ -204,22 +217,19 @@ class MySQLLearningRepository:
                 )
             stmt = stmt.order_by(LearningProgressHistoryRecord.recorded_at.desc())
 
-            records = session.scalars(stmt).all()
+            rows = session.execute(stmt).all()
             return [
                 {
                     "history_id": r.history_id,
                     "progress_id": r.progress_id,
                     "developer_id": r.developer_id,
                     "target_goal_skill_id": r.target_goal_skill_id,
-                    "target_goal": (
-                        self.graph_repo.get_skill_name_by_id(r.target_goal_skill_id)
-                        or r.target_goal_skill_id
-                    ),
+                    "target_goal": s_name,
                     "completed_count": r.completed_count,
                     "total_steps": r.total_steps,
                     "completion_percentage": r.completion_percentage,
                     "change_summary": r.change_summary,
                     "recorded_at": r.recorded_at,
                 }
-                for r in records
+                for r, s_name in rows
             ]

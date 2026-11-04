@@ -91,3 +91,18 @@ def seed_default_curriculum(graph_repo: SkillGraphRepository) -> None:
         len(DEFAULT_SKILLS),
         len(DEFAULT_RELATIONSHIPS),
     )
+
+
+if __name__ == "__main__":
+    from prism.storage.database import get_session_factory
+    from prism.storage.repositories.mysql_graph_repo import (
+        MySQLSkillGraphRepository,
+    )
+
+    factory = get_session_factory()
+    repository = MySQLSkillGraphRepository(factory)
+    seed_default_curriculum(repository)
+    print(
+        f"Seeded curriculum: {len(DEFAULT_SKILLS)} skills, "
+        f"{len(DEFAULT_RELATIONSHIPS)} relationships."
+    )

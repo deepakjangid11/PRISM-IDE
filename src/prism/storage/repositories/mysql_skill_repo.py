@@ -13,6 +13,7 @@ from prism.storage.database import session_scope
 from prism.storage.models.skill_records import (
     DeveloperSkillRecord,
     SkillEvidenceRecord,
+    SkillRecord,
 )
 from prism.storage.repositories.mysql_developer_repo import (
     MySQLDeveloperRepository,
@@ -71,30 +72,32 @@ class MySQLSkillRepository:
         )
 
         with session_scope(self.session_factory) as session:
-            stmt = select(SkillEvidenceRecord).where(
-                SkillEvidenceRecord.developer_id == dev_id
+            stmt = (
+                select(SkillEvidenceRecord, SkillRecord.skill_name)
+                .join(
+                    SkillRecord,
+                    SkillEvidenceRecord.skill_id == SkillRecord.skill_id,
+                )
+                .where(SkillEvidenceRecord.developer_id == dev_id)
             )
             if skill_id:
                 stmt = stmt.where(SkillEvidenceRecord.skill_id == skill_id)
             stmt = stmt.order_by(SkillEvidenceRecord.timestamp.asc())
 
-            records = session.scalars(stmt).all()
-            evidence_items: list[SkillEvidence] = []
-            for r in records:
-                s_name = self.graph_repo.get_skill_name_by_id(r.skill_id) or r.skill_id
-                evidence_items.append(
-                    SkillEvidence(
-                        evidence_id=r.evidence_id,
-                        developer_id=r.developer_id,
-                        skill_name=s_name,
-                        evidence_type=r.evidence_type,
-                        description=r.description,
-                        timestamp=r.timestamp,
-                        project_path=r.project_path,
-                        metadata=dict(r.metadata_json or {}),
-                    )
+            rows = session.execute(stmt).all()
+            return [
+                SkillEvidence(
+                    evidence_id=r.evidence_id,
+                    developer_id=r.developer_id,
+                    skill_name=s_name,
+                    evidence_type=r.evidence_type,
+                    description=r.description,
+                    timestamp=r.timestamp,
+                    project_path=r.project_path,
+                    metadata=dict(r.metadata_json or {}),
                 )
-            return evidence_items
+                for r, s_name in rows
+            ]
 
     def save_skill_assessment(self, skill: DeveloperSkill) -> None:
         """Persist materialized developer skill assessment."""
@@ -134,23 +137,32 @@ class MySQLSkillRepository:
         dev_id = developer_id.strip()
         self.developer_repo.ensure_developer(dev_id)
 
+        # Pre-fetch all evidence for this developer in 1 query to avoid N+1 queries
+        all_evidence = self.get_evidence(dev_id)
+        evidence_by_skill: dict[str, list[SkillEvidence]] = {}
+        for ev in all_evidence:
+            evidence_by_skill.setdefault(ev.skill_name.lower(), []).append(ev)
+
         with session_scope(self.session_factory) as session:
-            stmt = select(DeveloperSkillRecord).where(
-                DeveloperSkillRecord.developer_id == dev_id
+            stmt = (
+                select(DeveloperSkillRecord, SkillRecord.skill_name)
+                .join(
+                    SkillRecord,
+                    DeveloperSkillRecord.skill_id == SkillRecord.skill_id,
+                )
+                .where(DeveloperSkillRecord.developer_id == dev_id)
             )
-            records = session.scalars(stmt).all()
+            rows = session.execute(stmt).all()
 
             skills_dict: dict[str, DeveloperSkill] = {}
-            for r in records:
-                s_name = self.graph_repo.get_skill_name_by_id(r.skill_id) or r.skill_id
-                # Fetch evidence for this specific skill
-                evidence_list = self.get_evidence(dev_id, s_name)
+            for r, s_name in rows:
+                ev_list = evidence_by_skill.get(s_name.lower(), [])
                 skills_dict[s_name.lower()] = DeveloperSkill(
                     developer_id=dev_id,
                     skill_name=s_name,
                     proficiency_level=ProficiencyLevel(r.proficiency_level),
                     evidence_count=r.evidence_count,
-                    evidence_list=evidence_list,
+                    evidence_list=ev_list,
                     has_sufficient_evidence=r.has_sufficient_evidence,
                     last_assessed=r.last_assessed,
                 )

@@ -247,12 +247,15 @@ class SkillGraphBuilder:
         for src, dst in frontend_edges:
             graph.add_relationship(src, dst, RelationshipType.PREREQUISITE)
 
-        # Related skills
+        # Quality & Testing skills
+        graph.add_skill("Testing")
+        graph.add_skill("Data Validation")
+
+        # Related skills (non-redundant edges)
         related_pairs = [
             ("FastAPI", "REST APIs"),
             ("React", "Flutter"),
             ("Machine Learning", "Statistics"),
-            ("SQL", "Database Design"),
         ]
         for s1, s2 in related_pairs:
             try:

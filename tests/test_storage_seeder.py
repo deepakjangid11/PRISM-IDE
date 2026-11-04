@@ -33,3 +33,17 @@ def test_seed_default_curriculum_idempotency() -> None:
     seed_default_curriculum(repo)
     assert len(repo.get_skills()) == first_skills_count
     assert len(repo.get_relationships()) == first_rels_count
+
+
+def test_storage_package_public_and_lazy_import() -> None:
+    import pytest
+
+    from prism import storage
+
+    # Test lazy public import resolution
+    curriculum_seeder = storage.seed_default_curriculum
+    assert callable(curriculum_seeder)
+
+    # Test invalid attribute lookup raises AttributeError
+    with pytest.raises(AttributeError, match="has no attribute 'nonexistent_attr'"):
+        _ = storage.nonexistent_attr

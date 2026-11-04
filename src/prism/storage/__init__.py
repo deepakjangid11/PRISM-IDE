@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 from prism.storage.bootstrap import check_db_connection
 from prism.storage.database import (
     create_db_engine,
@@ -7,7 +9,9 @@ from prism.storage.database import (
     session_scope,
 )
 from prism.storage.models.base import Base
-from prism.storage.seeder import seed_default_curriculum
+
+if TYPE_CHECKING:
+    from prism.storage.seeder import seed_default_curriculum
 
 __all__ = [
     "Base",
@@ -19,3 +23,11 @@ __all__ = [
     "seed_default_curriculum",
     "session_scope",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    if name == "seed_default_curriculum":
+        from prism.storage.seeder import seed_default_curriculum
+
+        return seed_default_curriculum
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

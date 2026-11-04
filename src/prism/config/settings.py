@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     app_name: str = "PRISM IDE"
     environment: str = "development"
     debug: bool = True
+    storage_backend: str = "mysql"  # Options: "mysql", "memory"
 
     # Database Configuration (MySQL Server)
     db_host: str = "localhost"
