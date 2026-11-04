@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import sys
 import uuid
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from prism.exceptions.custom_exception import CustomException
 from prism.intelligence.models.project_intelligence_models import (
@@ -14,6 +17,12 @@ from prism.intelligence.models.skill_models import (
 )
 from prism.logging.logger import get_logger
 
+if TYPE_CHECKING:
+    from prism.storage.repositories.base import (
+        DeveloperRepository,
+        SkillRepository,
+    )
+
 logger = get_logger(__name__)
 
 MINIMUM_EVIDENCE_FOR_ASSESSMENT = 3
@@ -22,8 +31,14 @@ MINIMUM_EVIDENCE_FOR_ASSESSMENT = 3
 class SkillTracker:
     """Tracks, stores, and evaluates evidence-based skill profiles for developers."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        repository: SkillRepository | None = None,
+        developer_repo: DeveloperRepository | None = None,
+    ) -> None:
         self._profiles: dict[str, DeveloperSkillProfile] = {}
+        self._repository = repository
+        self._dev_repo = developer_repo
 
     def get_profile(self, developer_id: str) -> DeveloperSkillProfile:
         """Retrieve or initialize the skill profile for a developer."""
@@ -32,6 +47,12 @@ class SkillTracker:
             raise ValueError("Developer ID cannot be empty")
 
         if dev_id not in self._profiles:
+            if self._repository is not None:
+                repo_profile = self._repository.get_profile(dev_id)
+                if repo_profile.skills:
+                    self._profiles[dev_id] = repo_profile
+                    return repo_profile
+
             self._profiles[dev_id] = DeveloperSkillProfile(
                 developer_id=dev_id,
                 skills={},
@@ -66,6 +87,10 @@ class SkillTracker:
         self._evaluate_proficiency(dev_skill)
         profile.last_updated = datetime.now(UTC)
 
+        if self._repository is not None:
+            self._repository.record_evidence(evidence)
+            self._repository.save_skill_assessment(dev_skill)
+
         logger.info(
             "Recorded skill evidence | dev=%s | skill=%s | count=%d | level=%s",
             evidence.developer_id,
@@ -95,7 +120,10 @@ class SkillTracker:
 
     def list_developers(self) -> list[str]:
         """Return list of all registered developer IDs."""
-        return sorted(self._profiles.keys())
+        dev_set = set(self._profiles.keys())
+        if self._repository is not None:
+            dev_set.update(self._repository.list_developers())
+        return sorted(dev_set)
 
     @staticmethod
     def _evaluate_proficiency(skill: DeveloperSkill) -> None:

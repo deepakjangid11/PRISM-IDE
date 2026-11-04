@@ -5,6 +5,7 @@ from prism.api.routes.learning import router as learning_router
 from prism.api.routes.mentoring import router as mentoring_router
 from prism.api.routes.project import router as project_router
 from prism.config.settings import Settings
+from prism.storage.bootstrap import check_db_connection
 
 settings = Settings()
 
@@ -23,7 +24,9 @@ app.include_router(mentoring_router)
 
 @app.get("/health", tags=["Health"])
 async def health_check() -> dict[str, str]:
+    db_connected = check_db_connection()
     return {
         "status": "healthy",
         "application": settings.app_name,
+        "database": "connected" if db_connected else "offline",
     }

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from collections import defaultdict, deque
+from typing import TYPE_CHECKING
 
 from prism.intelligence.models.skill_models import (
     RelationshipType,
@@ -7,13 +10,16 @@ from prism.intelligence.models.skill_models import (
 )
 from prism.logging.logger import get_logger
 
+if TYPE_CHECKING:
+    from prism.storage.repositories.base import SkillGraphRepository
+
 logger = get_logger(__name__)
 
 
 class SkillGraph:
     """Directed graph representing technical skills and their inter-relationships."""
 
-    def __init__(self) -> None:
+    def __init__(self, repository: SkillGraphRepository | None = None) -> None:
         self._skills: set[str] = set()
         self._relationships: list[SkillRelationship] = []
         # from_skill (prereq) -> list of to_skills (dependents)
@@ -22,6 +28,19 @@ class SkillGraph:
         self._dependent_to_prereqs: dict[str, list[str]] = defaultdict(list)
         # Undirected related links
         self._related_map: dict[str, set[str]] = defaultdict(set)
+        self._repository: SkillGraphRepository | None = repository
+
+        if self._repository is not None:
+            for s in self._repository.get_skills():
+                self._skills.add(s)
+            for r in self._repository.get_relationships():
+                self._relationships.append(r)
+                if r.relationship_type == RelationshipType.PREREQUISITE:
+                    self._prereq_to_dependents[r.from_skill].append(r.to_skill)
+                    self._dependent_to_prereqs[r.to_skill].append(r.from_skill)
+                else:
+                    self._related_map[r.from_skill].add(r.to_skill)
+                    self._related_map[r.to_skill].add(r.from_skill)
 
     def add_skill(self, skill_name: str) -> None:
         """Register a technical skill in the graph."""
@@ -29,6 +48,9 @@ class SkillGraph:
         if not cleaned:
             raise ValueError("Skill name cannot be empty")
         self._skills.add(cleaned)
+        if self._repository is not None:
+            skill_id = cleaned.lower().replace(" ", "_")
+            self._repository.register_skill(skill_id, cleaned)
 
     def has_skill(self, skill_name: str) -> bool:
         return skill_name.strip() in self._skills
@@ -72,6 +94,8 @@ class SkillGraph:
             relationship_type=relationship_type,
         )
         self._relationships.append(rel)
+        if self._repository is not None:
+            self._repository.add_relationship(rel)
 
         if relationship_type == RelationshipType.PREREQUISITE:
             self._prereq_to_dependents[source].append(target)
@@ -179,9 +203,11 @@ class SkillGraphBuilder:
     """Builder providing a default curriculum skill graph and factory helpers."""
 
     @staticmethod
-    def build_default_graph() -> SkillGraph:
+    def build_default_graph(
+        repository: SkillGraphRepository | None = None,
+    ) -> SkillGraph:
         """Construct a standardized software engineering technical skill graph."""
-        graph = SkillGraph()
+        graph = SkillGraph(repository=repository)
 
         # Machine Learning pathway
         # Python -> NumPy -> Pandas -> Statistics -> Machine Learning

@@ -1,4 +1,3 @@
-@"
 # Python
 __pycache__/
 *.py[cod]
@@ -9,7 +8,7 @@ __pycache__/
 venv/
 env/
 
-# Environment
+# Environment & Secrets
 .env
 .env.*
 !.env.example
@@ -42,4 +41,3 @@ logs/
 build/
 dist/
 *.egg-info/
-"@ | Set-Content .gitignore
