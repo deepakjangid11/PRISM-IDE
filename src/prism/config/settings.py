@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     debug: bool = True
     storage_backend: str = "mysql"  # Options: "mysql", "memory"
 
+    # Developer Session Management Configuration
+    session_timeout_minutes: int = 30
+    session_heartbeat_interval_seconds: int = 60
+
     # Database Configuration (MySQL Server)
     db_host: str = "localhost"
     db_port: int = 3306

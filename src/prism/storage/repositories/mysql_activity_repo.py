@@ -31,6 +31,7 @@ class MySQLActivityRepository:
             record = DeveloperActivityRecord(
                 event_id=activity.event_id,
                 developer_id=activity.developer_id,
+                session_id=activity.session_id,
                 project_path=activity.project_path,
                 event_type=activity.event_type,
                 timestamp=activity.timestamp,
@@ -54,6 +55,7 @@ class MySQLActivityRepository:
                 record = DeveloperActivityRecord(
                     event_id=activity.event_id,
                     developer_id=activity.developer_id,
+                    session_id=activity.session_id,
                     project_path=activity.project_path,
                     event_type=activity.event_type,
                     timestamp=activity.timestamp,
@@ -85,6 +87,30 @@ class MySQLActivityRepository:
                     event_type=r.event_type,
                     timestamp=r.timestamp,
                     file_path=r.file_path,
+                    session_id=r.session_id,
+                    metadata=dict(r.metadata_json or {}),
+                )
+                for r in records
+            ]
+
+    def get_by_session(self, session_id: str) -> list[DeveloperActivity]:
+        """Fetch chronological activities associated with a specific session."""
+        with session_scope(self.session_factory) as session:
+            stmt = (
+                select(DeveloperActivityRecord)
+                .where(DeveloperActivityRecord.session_id == session_id.strip())
+                .order_by(DeveloperActivityRecord.timestamp.asc())
+            )
+            records = session.scalars(stmt).all()
+            return [
+                DeveloperActivity(
+                    event_id=r.event_id,
+                    developer_id=r.developer_id,
+                    project_path=r.project_path,
+                    event_type=r.event_type,
+                    timestamp=r.timestamp,
+                    file_path=r.file_path,
+                    session_id=r.session_id,
                     metadata=dict(r.metadata_json or {}),
                 )
                 for r in records

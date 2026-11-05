@@ -3,6 +3,8 @@ from prism.intelligence.developer_activity import ActivityRecorder
 from prism.intelligence.developer_behavior_analyzer import (
     DeveloperBehaviorAnalyzer,
 )
+from prism.intelligence.developer_identity import DeveloperIdentityService
+from prism.intelligence.developer_session import DeveloperSessionService
 from prism.intelligence.skill_graph import SkillGraph, SkillGraphBuilder
 from prism.intelligence.skill_tracker import SkillTracker
 from prism.learning.knowledge_gap_analyzer import KnowledgeGapAnalyzer
@@ -18,6 +20,7 @@ from prism.storage.database import get_session_factory
 from prism.storage.repositories.base import (
     ActivityRepository,
     DeveloperRepository,
+    DeveloperSessionRepository,
     LearningRepository,
     SkillGraphRepository,
     SkillRepository,
@@ -26,6 +29,7 @@ from prism.storage.repositories.memory_repo import (
     InMemoryActivityRepository,
     InMemoryDeveloperRepository,
     InMemoryLearningRepository,
+    InMemorySessionRepository,
     InMemorySkillGraphRepository,
     InMemorySkillRepository,
 )
@@ -39,6 +43,7 @@ from prism.storage.repositories.mysql_graph_repo import MySQLSkillGraphRepositor
 from prism.storage.repositories.mysql_learning_repo import (
     MySQLLearningRepository,
 )
+from prism.storage.repositories.mysql_session_repo import MySQLSessionRepository
 from prism.storage.repositories.mysql_skill_repo import MySQLSkillRepository
 
 logger = get_logger(__name__)
@@ -52,6 +57,7 @@ def init_storage_repositories(
     SkillGraphRepository,
     SkillRepository,
     LearningRepository,
+    DeveloperSessionRepository,
 ]:
     """Initialize repository layer based on explicit configuration.
 
@@ -68,7 +74,8 @@ def init_storage_repositories(
         mem_grp = InMemorySkillGraphRepository()
         mem_skl = InMemorySkillRepository(dev_repo=mem_dev, graph_repo=mem_grp)
         mem_lrn = InMemoryLearningRepository(dev_repo=mem_dev, graph_repo=mem_grp)
-        return mem_dev, mem_act, mem_grp, mem_skl, mem_lrn
+        mem_ses = InMemorySessionRepository(dev_repo=mem_dev)
+        return mem_dev, mem_act, mem_grp, mem_skl, mem_lrn, mem_ses
 
     if selected_backend == "mysql":
         if not check_db_connection():
@@ -90,7 +97,8 @@ def init_storage_repositories(
         sql_lrn = MySQLLearningRepository(
             sf, developer_repo=sql_dev, graph_repo=sql_grp
         )
-        return sql_dev, sql_act, sql_grp, sql_skl, sql_lrn
+        sql_ses = MySQLSessionRepository(sf, developer_repo=sql_dev)
+        return sql_dev, sql_act, sql_grp, sql_skl, sql_lrn, sql_ses
 
     raise ValueError(
         f"Unsupported storage backend '{selected_backend}'. Expected 'mysql' or 'memory'."
@@ -104,10 +112,22 @@ def init_storage_repositories(
     graph_repo,
     skill_repo,
     learning_repo,
+    session_repo,
 ) = init_storage_repositories()
 
-# Activity recorder service wired to persistent repository
-activity_recorder = ActivityRecorder(repository=activity_repo)
+# Developer identity and session services
+identity_service = DeveloperIdentityService(developer_repo=developer_repo)
+session_service = DeveloperSessionService(
+    session_repo=session_repo,
+    developer_repo=developer_repo,
+    app_settings=settings,
+)
+
+# Activity recorder service wired to persistent repository and session service
+activity_recorder = ActivityRecorder(
+    repository=activity_repo,
+    session_service=session_service,
+)
 
 # Skill graph initialization:
 # In MySQL mode, loads existing persistent graph topology without re-inserting on startup.

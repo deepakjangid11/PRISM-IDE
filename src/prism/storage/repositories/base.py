@@ -3,8 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from prism.intelligence.models.developer_behavior_models import (
         DeveloperActivity,
+    )
+    from prism.intelligence.models.developer_identity_models import (
+        DeveloperSession,
     )
     from prism.intelligence.models.skill_models import (
         DeveloperSkill,
@@ -31,6 +36,28 @@ class DeveloperRepository(Protocol):
         """Fetch developer metadata by ID."""
         ...
 
+    def get_by_email(self, email: str) -> dict[str, Any] | None:
+        """Fetch developer metadata by email address."""
+        ...
+
+    def create_developer(
+        self,
+        developer_id: str,
+        name: str | None = None,
+        email: str | None = None,
+    ) -> dict[str, Any]:
+        """Create a new developer record, rejecting duplicates."""
+        ...
+
+    def update_developer(
+        self,
+        developer_id: str,
+        name: str | None = None,
+        email: str | None = None,
+    ) -> dict[str, Any] | None:
+        """Update permitted developer profile fields."""
+        ...
+
     def list_developers(self) -> list[str]:
         """Return list of all registered developer IDs."""
         ...
@@ -53,8 +80,61 @@ class ActivityRepository(Protocol):
         """Fetch recorded activities for a developer, optionally filtered by project."""
         ...
 
+    def get_by_session(self, session_id: str) -> list[DeveloperActivity]:
+        """Fetch recorded activities associated with a specific working session."""
+        ...
+
     def clear(self, developer_id: str | None = None) -> None:
         """Remove recorded activities, optionally filtered by developer."""
+        ...
+
+
+class DeveloperSessionRepository(Protocol):
+    """Protocol for persistent developer working sessions."""
+
+    def create_session(self, session: DeveloperSession) -> None:
+        """Persist a new developer session."""
+        ...
+
+    def get_session(self, session_id: str) -> DeveloperSession | None:
+        """Retrieve a session by its unique session ID."""
+        ...
+
+    def get_active_session(self, developer_id: str) -> DeveloperSession | None:
+        """Retrieve the currently active session for a developer."""
+        ...
+
+    def update_session(self, session: DeveloperSession) -> None:
+        """Update an existing session state."""
+        ...
+
+    def touch_heartbeat(
+        self,
+        session_id: str,
+        last_activity_at: datetime,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
+        """Update the last_activity_at timestamp and optionally metadata for an active session."""
+        ...
+
+    def list_sessions_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> tuple[list[DeveloperSession], int]:
+        """Retrieve paginated sessions for a developer and the total count."""
+        ...
+
+    def get_stale_sessions(self, cutoff_time: datetime) -> list[DeveloperSession]:
+        """Retrieve active sessions whose last activity is before the cutoff time."""
+        ...
+
+    def terminate_session(
+        self, session_id: str, status: str, ended_at: datetime
+    ) -> bool:
+        """Conclude an active session with the specified status and ended timestamp."""
+        ...
+
+    def clear(self, developer_id: str | None = None) -> None:
+        """Remove sessions, optionally filtered by developer."""
         ...
 
 

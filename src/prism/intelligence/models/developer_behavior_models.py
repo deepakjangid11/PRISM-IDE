@@ -15,6 +15,7 @@ class DeveloperActivity(BaseModel):
     timestamp: datetime
     project_path: str
     file_path: str | None = None
+    session_id: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

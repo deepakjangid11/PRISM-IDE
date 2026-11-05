@@ -330,8 +330,8 @@ def test_production_safety_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_explicit_memory_configuration() -> None:
     # Explicit memory backend provisions in-memory repositories cleanly
     repos = init_storage_repositories("memory")
-    assert len(repos) == 5
-    dev_repo, _act, _grp, _skl, _lrn = repos
+    assert len(repos) == 6
+    dev_repo, _act, _grp, _skl, _lrn, _ses = repos
 
     dev_repo.ensure_developer("dev_mem", name="Memory Dev")
     assert dev_repo.get_developer("dev_mem") is not None

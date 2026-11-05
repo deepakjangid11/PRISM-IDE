@@ -19,6 +19,9 @@ class DeveloperActivityRecord(Base):
         ForeignKey("developers.developer_id", ondelete="CASCADE"),
         nullable=False,
     )
+    session_id: Mapped[str | None] = mapped_column(
+        String(64), nullable=True, index=True
+    )
     project_path: Mapped[str] = mapped_column(String(512), nullable=False)
     event_type: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     timestamp: Mapped[datetime] = mapped_column(

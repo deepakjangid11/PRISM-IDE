@@ -6,6 +6,7 @@ from prism.storage.models.learning_records import (
     LearningProgressItemRecord,
     LearningProgressRecord,
 )
+from prism.storage.models.session_records import DeveloperSessionRecord
 from prism.storage.models.skill_records import (
     DeveloperSkillRecord,
     SkillEvidenceRecord,
@@ -17,6 +18,7 @@ __all__ = [
     "Base",
     "DeveloperActivityRecord",
     "DeveloperRecord",
+    "DeveloperSessionRecord",
     "DeveloperSkillRecord",
     "LearningProgressHistoryRecord",
     "LearningProgressItemRecord",

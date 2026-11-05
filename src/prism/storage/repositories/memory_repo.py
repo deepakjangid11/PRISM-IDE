@@ -4,6 +4,7 @@ from typing import Any
 from prism.intelligence.models.developer_behavior_models import (
     DeveloperActivity,
 )
+from prism.intelligence.models.developer_identity_models import DeveloperSession
 from prism.intelligence.models.skill_models import (
     DeveloperSkill,
     DeveloperSkillProfile,
@@ -44,6 +45,68 @@ class InMemoryDeveloperRepository:
     def get_developer(self, developer_id: str) -> dict[str, Any] | None:
         return self._developers.get(developer_id)
 
+    def get_by_email(self, email: str) -> dict[str, Any] | None:
+        cleaned = email.strip().lower()
+        if not cleaned:
+            return None
+        for dev in self._developers.values():
+            if dev.get("email") == cleaned:
+                return dev
+        return None
+
+    def create_developer(
+        self,
+        developer_id: str,
+        name: str | None = None,
+        email: str | None = None,
+    ) -> dict[str, Any]:
+        cleaned_id = developer_id.strip()
+        if not cleaned_id:
+            raise ValueError("Developer ID cannot be empty")
+        if cleaned_id in self._developers:
+            raise ValueError(f"Developer with ID '{cleaned_id}' already exists")
+        cleaned_email = email.strip().lower() if email else None
+        if cleaned_email and any(
+            d.get("email") == cleaned_email for d in self._developers.values()
+        ):
+            raise ValueError(f"Developer with email '{cleaned_email}' already exists")
+
+        now = datetime.now(UTC)
+        rec = {
+            "developer_id": cleaned_id,
+            "name": name,
+            "email": cleaned_email,
+            "created_at": now,
+            "updated_at": now,
+        }
+        self._developers[cleaned_id] = rec
+        return rec
+
+    def update_developer(
+        self,
+        developer_id: str,
+        name: str | None = None,
+        email: str | None = None,
+    ) -> dict[str, Any] | None:
+        cleaned_id = developer_id.strip()
+        if cleaned_id not in self._developers:
+            return None
+        rec = self._developers[cleaned_id]
+        if email is not None:
+            cleaned_email = email.strip().lower() if email.strip() else None
+            if cleaned_email and any(
+                k != cleaned_id and d.get("email") == cleaned_email
+                for k, d in self._developers.items()
+            ):
+                raise ValueError(
+                    f"Email '{cleaned_email}' is already registered to another developer"
+                )
+            rec["email"] = cleaned_email
+        if name is not None:
+            rec["name"] = name.strip() if name.strip() else None
+        rec["updated_at"] = datetime.now(UTC)
+        return rec
+
     def list_developers(self) -> list[str]:
         return sorted(self._developers.keys())
 
@@ -73,6 +136,9 @@ class InMemoryActivityRepository:
             and (project_path is None or a.project_path == project_path)
         ]
 
+    def get_by_session(self, session_id: str) -> list[DeveloperActivity]:
+        return [a for a in self._activities if a.session_id == session_id]
+
     def clear(self, developer_id: str | None = None) -> None:
         if developer_id is None:
             self._activities.clear()
@@ -80,6 +146,111 @@ class InMemoryActivityRepository:
             self._activities = [
                 a for a in self._activities if a.developer_id != developer_id
             ]
+
+
+class InMemorySessionRepository:
+    """In-memory implementation of DeveloperSessionRepository for testing and offline mode."""
+
+    def __init__(self, dev_repo: InMemoryDeveloperRepository | None = None) -> None:
+        self._sessions: dict[str, DeveloperSession] = {}
+        self._dev_repo = dev_repo or InMemoryDeveloperRepository()
+
+    def create_session(self, session: DeveloperSession) -> None:
+        self._dev_repo.ensure_developer(session.developer_id)
+        self._sessions[session.session_id] = session
+
+    def get_session(self, session_id: str) -> DeveloperSession | None:
+        return self._sessions.get(session_id)
+
+    def get_active_session(self, developer_id: str) -> DeveloperSession | None:
+        active = [
+            s
+            for s in self._sessions.values()
+            if s.developer_id == developer_id and s.status == "active"
+        ]
+        if not active:
+            return None
+        active.sort(key=lambda s: s.started_at, reverse=True)
+        return active[0]
+
+    def update_session(self, session: DeveloperSession) -> None:
+        if session.session_id in self._sessions:
+            self._sessions[session.session_id] = session
+
+    def touch_heartbeat(
+        self,
+        session_id: str,
+        last_activity_at: datetime,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
+        session = self._sessions.get(session_id)
+        if not session or session.status != "active":
+            return False
+        meta = dict(session.metadata)
+        if metadata:
+            meta.update(metadata)
+        updated = DeveloperSession(
+            session_id=session.session_id,
+            developer_id=session.developer_id,
+            status=session.status,
+            started_at=session.started_at,
+            last_activity_at=last_activity_at,
+            ended_at=session.ended_at,
+            project_path=session.project_path,
+            metadata=meta,
+            created_at=session.created_at,
+            updated_at=datetime.now(UTC),
+        )
+        self._sessions[session_id] = updated
+        return True
+
+    def list_sessions_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> tuple[list[DeveloperSession], int]:
+        all_dev_sessions = [
+            s for s in self._sessions.values() if s.developer_id == developer_id
+        ]
+        all_dev_sessions.sort(key=lambda s: s.started_at, reverse=True)
+        total = len(all_dev_sessions)
+        return all_dev_sessions[offset : offset + limit], total
+
+    def get_stale_sessions(self, cutoff_time: datetime) -> list[DeveloperSession]:
+        return [
+            s
+            for s in self._sessions.values()
+            if s.status == "active" and s.last_activity_at < cutoff_time
+        ]
+
+    def terminate_session(
+        self, session_id: str, status: str, ended_at: datetime
+    ) -> bool:
+        session = self._sessions.get(session_id)
+        if not session:
+            return False
+        updated = DeveloperSession(
+            session_id=session.session_id,
+            developer_id=session.developer_id,
+            status=status,
+            started_at=session.started_at,
+            last_activity_at=session.last_activity_at,
+            ended_at=ended_at,
+            project_path=session.project_path,
+            metadata=dict(session.metadata),
+            created_at=session.created_at,
+            updated_at=datetime.now(UTC),
+        )
+        self._sessions[session_id] = updated
+        return True
+
+    def clear(self, developer_id: str | None = None) -> None:
+        if developer_id is None:
+            self._sessions.clear()
+        else:
+            self._sessions = {
+                k: v
+                for k, v in self._sessions.items()
+                if v.developer_id != developer_id
+            }
 
 
 class InMemorySkillGraphRepository:
