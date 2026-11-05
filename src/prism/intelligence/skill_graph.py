@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections import defaultdict, deque
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from prism.intelligence.models.skill_models import (
     RelationshipType,
     SkillGraphData,
+    SkillNode,
     SkillRelationship,
 )
 from prism.logging.logger import get_logger
@@ -16,11 +17,174 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
+ROLE_SKILLS_MAP: dict[str, list[str]] = {
+    "Machine Learning Engineer": [
+        "Python",
+        "NumPy",
+        "Pandas",
+        "Statistics",
+        "Machine Learning",
+    ],
+    "Backend Developer": [
+        "Python",
+        "FastAPI",
+        "SQL",
+        "Database Design",
+        "REST APIs",
+        "Software Architecture",
+    ],
+    "Frontend Developer": [
+        "HTML/CSS",
+        "JavaScript",
+        "TypeScript",
+        "React",
+    ],
+    "Full Stack Developer": [
+        "HTML/CSS",
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Python",
+        "FastAPI",
+        "SQL",
+    ],
+    "Mobile Developer": [
+        "Object-Oriented Programming",
+        "Flutter",
+    ],
+}
+
+
+KNOWN_SKILL_METADATA: dict[str, dict[str, Any]] = {
+    "python": {
+        "category": "language",
+        "language": "Python",
+        "difficulty": "beginner",
+        "description": "Core Python programming language",
+    },
+    "numpy": {
+        "category": "ai_ml",
+        "language": "Python",
+        "difficulty": "intermediate",
+        "description": "Numerical computations in Python",
+    },
+    "pandas": {
+        "category": "ai_ml",
+        "language": "Python",
+        "difficulty": "intermediate",
+        "description": "Data analysis and manipulation",
+    },
+    "statistics": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "Probability, inference and statistical modeling",
+    },
+    "machine learning": {
+        "category": "ai_ml",
+        "language": "Python",
+        "difficulty": "advanced",
+        "description": "Supervised, unsupervised and predictive ML",
+    },
+    "fastapi": {
+        "category": "framework",
+        "language": "Python",
+        "difficulty": "intermediate",
+        "description": "High-performance Python web framework",
+    },
+    "rest apis": {
+        "category": "architecture",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "RESTful web services and API design",
+    },
+    "sql": {
+        "category": "database",
+        "language": "SQL",
+        "difficulty": "beginner",
+        "description": "Structured Query Language for relational databases",
+    },
+    "database design": {
+        "category": "database",
+        "language": "SQL",
+        "difficulty": "intermediate",
+        "description": "Relational schema design and indexing",
+    },
+    "software architecture": {
+        "category": "architecture",
+        "language": None,
+        "difficulty": "advanced",
+        "description": "System architecture, modularity and design",
+    },
+    "object-oriented programming": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "Classes, inheritance, polymorphism",
+    },
+    "data structures": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "Arrays, trees, graphs, hash tables",
+    },
+    "algorithms": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "Sorting, searching, algorithmic complexity",
+    },
+    "html/css": {
+        "category": "frontend",
+        "language": "HTML/CSS",
+        "difficulty": "beginner",
+        "description": "Web markup and responsive styling",
+    },
+    "javascript": {
+        "category": "language",
+        "language": "JavaScript",
+        "difficulty": "beginner",
+        "description": "Client-side scripting language",
+    },
+    "typescript": {
+        "category": "language",
+        "language": "TypeScript",
+        "difficulty": "intermediate",
+        "description": "Static type system for JavaScript",
+    },
+    "react": {
+        "category": "framework",
+        "language": "TypeScript",
+        "difficulty": "intermediate",
+        "description": "Declarative UI component library",
+    },
+    "flutter": {
+        "category": "mobile",
+        "language": "Dart",
+        "difficulty": "intermediate",
+        "description": "Cross-platform mobile UI framework",
+    },
+    "testing": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "intermediate",
+        "description": "Unit testing, integration testing and QA",
+    },
+    "data validation": {
+        "category": "concept",
+        "language": None,
+        "difficulty": "beginner",
+        "description": "Input validation and schema enforcement",
+    },
+}
+
+
 class SkillGraph:
     """Directed graph representing technical skills and their inter-relationships."""
 
     def __init__(self, repository: SkillGraphRepository | None = None) -> None:
         self._skills: set[str] = set()
+        self._nodes: dict[str, SkillNode] = {}
         self._relationships: list[SkillRelationship] = []
         # from_skill (prereq) -> list of to_skills (dependents)
         self._prereq_to_dependents: dict[str, list[str]] = defaultdict(list)
@@ -33,6 +197,7 @@ class SkillGraph:
         if self._repository is not None:
             for s in self._repository.get_skills():
                 self._skills.add(s)
+                self._ensure_node(s)
             for r in self._repository.get_relationships():
                 self._relationships.append(r)
                 if r.relationship_type == RelationshipType.PREREQUISITE:
@@ -42,15 +207,100 @@ class SkillGraph:
                     self._related_map[r.from_skill].add(r.to_skill)
                     self._related_map[r.to_skill].add(r.from_skill)
 
-    def add_skill(self, skill_name: str) -> None:
+    def _ensure_node(
+        self,
+        skill_name: str,
+        category: str = "general",
+        language: str | None = None,
+        difficulty: str = "intermediate",
+        description: str | None = None,
+    ) -> SkillNode:
+        key = skill_name.lower().strip()
+        if key not in self._nodes:
+            meta = KNOWN_SKILL_METADATA.get(key, {})
+            eff_cat = (
+                category if category != "general" else meta.get("category", "general")
+            )
+            eff_lang = language or meta.get("language")
+            eff_diff = (
+                difficulty
+                if difficulty != "intermediate"
+                else meta.get("difficulty", "intermediate")
+            )
+            eff_desc = description or meta.get("description")
+            self._nodes[key] = SkillNode(
+                skill_id=key.replace(" ", "_"),
+                name=skill_name.strip(),
+                category=eff_cat,
+                language=eff_lang,
+                difficulty=eff_diff,
+                description=eff_desc,
+            )
+        return self._nodes[key]
+
+    def add_skill(
+        self,
+        skill_name: str,
+        category: str = "general",
+        language: str | None = None,
+        difficulty: str = "intermediate",
+        description: str | None = None,
+    ) -> None:
         """Register a technical skill in the graph."""
         cleaned = skill_name.strip()
         if not cleaned:
             raise ValueError("Skill name cannot be empty")
         self._skills.add(cleaned)
+        self._ensure_node(
+            cleaned,
+            category=category,
+            language=language,
+            difficulty=difficulty,
+            description=description,
+        )
         if self._repository is not None:
             skill_id = cleaned.lower().replace(" ", "_")
             self._repository.register_skill(skill_id, cleaned)
+
+    def add_node(self, node: SkillNode) -> None:
+        """Register a rich SkillNode in the graph."""
+        self._skills.add(node.name)
+        self._nodes[node.name.lower().strip()] = node
+        if self._repository is not None:
+            self._repository.register_skill(node.skill_id, node.name)
+
+    def get_node(self, skill_name: str) -> SkillNode | None:
+        """Retrieve metadata for a skill node."""
+        return self._nodes.get(skill_name.lower().strip())
+
+    def filter_by_category(self, category: str) -> list[str]:
+        """Filter skills belonging to a specific category."""
+        target = category.lower().strip()
+        return sorted(
+            node.name
+            for node in self._nodes.values()
+            if node.category.lower() == target
+        )
+
+    def filter_by_language(self, language: str) -> list[str]:
+        """Filter skills associated with a specific programming language."""
+        target = language.lower().strip()
+        return sorted(
+            node.name
+            for node in self._nodes.values()
+            if node.language and node.language.lower() == target
+        )
+
+    def get_roles(self) -> list[str]:
+        """Return available career roles."""
+        return sorted(ROLE_SKILLS_MAP.keys())
+
+    def get_role_skills(self, role_name: str) -> list[str]:
+        """Return skills required for a specific career role."""
+        for name, skills in ROLE_SKILLS_MAP.items():
+            if name.lower() == role_name.lower().strip():
+                return list(skills)
+        return []
 
     def has_skill(self, skill_name: str) -> bool:
         return skill_name.strip() in self._skills
@@ -97,7 +347,10 @@ class SkillGraph:
         if self._repository is not None:
             self._repository.add_relationship(rel)
 
-        if relationship_type == RelationshipType.PREREQUISITE:
+        if relationship_type in (
+            RelationshipType.PREREQUISITE,
+            RelationshipType.DEPENDENCY,
+        ):
             self._prereq_to_dependents[source].append(target)
             self._dependent_to_prereqs[target].append(source)
         else:
@@ -162,6 +415,10 @@ class SkillGraph:
         target = skill_name.strip()
         return sorted(self._related_map.get(target, set()))
 
+    def get_related(self, skill_name: str) -> list[str]:
+        """Convenience alias for get_related_skills."""
+        return self.get_related_skills(skill_name)
+
     def _topological_sort(self, subset: set[str]) -> list[str]:
         """Order a subset of skills such that prerequisites appear before dependents."""
         in_degree: dict[str, int] = {s: 0 for s in subset}
@@ -195,6 +452,7 @@ class SkillGraph:
         """Export current graph structure as a serializable model."""
         return SkillGraphData(
             skills=sorted(self._skills),
+            nodes=sorted(self._nodes.values(), key=lambda n: n.name),
             relationships=list(self._relationships),
         )
 
@@ -208,6 +466,153 @@ class SkillGraphBuilder:
     ) -> SkillGraph:
         """Construct a standardized software engineering technical skill graph."""
         graph = SkillGraph(repository=repository)
+
+        # Node metadata catalog
+        nodes_metadata = [
+            ("Python", "language", "Python", "beginner", "Python programming language"),
+            (
+                "NumPy",
+                "ai_ml",
+                "Python",
+                "intermediate",
+                "Numerical computations in Python",
+            ),
+            (
+                "Pandas",
+                "ai_ml",
+                "Python",
+                "intermediate",
+                "Data analysis and manipulation",
+            ),
+            (
+                "Statistics",
+                "concept",
+                None,
+                "intermediate",
+                "Probability, inference and statistical modeling",
+            ),
+            (
+                "Machine Learning",
+                "ai_ml",
+                "Python",
+                "advanced",
+                "Supervised, unsupervised and predictive ML",
+            ),
+            (
+                "FastAPI",
+                "framework",
+                "Python",
+                "intermediate",
+                "High-performance Python web framework",
+            ),
+            (
+                "REST APIs",
+                "architecture",
+                None,
+                "intermediate",
+                "RESTful web services and API design",
+            ),
+            (
+                "SQL",
+                "database",
+                "SQL",
+                "beginner",
+                "Structured Query Language for relational databases",
+            ),
+            (
+                "Database Design",
+                "database",
+                "SQL",
+                "intermediate",
+                "Relational schema design and indexing",
+            ),
+            (
+                "Software Architecture",
+                "architecture",
+                None,
+                "advanced",
+                "System architecture, modularity and design",
+            ),
+            (
+                "Object-Oriented Programming",
+                "concept",
+                None,
+                "intermediate",
+                "Classes, inheritance, polymorphism",
+            ),
+            (
+                "Data Structures",
+                "concept",
+                None,
+                "intermediate",
+                "Arrays, trees, graphs, hash tables",
+            ),
+            (
+                "Algorithms",
+                "concept",
+                None,
+                "intermediate",
+                "Sorting, searching, algorithmic complexity",
+            ),
+            (
+                "HTML/CSS",
+                "frontend",
+                "HTML/CSS",
+                "beginner",
+                "Web markup and responsive styling",
+            ),
+            (
+                "JavaScript",
+                "language",
+                "JavaScript",
+                "beginner",
+                "Client-side scripting language",
+            ),
+            (
+                "TypeScript",
+                "language",
+                "TypeScript",
+                "intermediate",
+                "Static type system for JavaScript",
+            ),
+            (
+                "React",
+                "framework",
+                "TypeScript",
+                "intermediate",
+                "Declarative UI component library",
+            ),
+            (
+                "Flutter",
+                "mobile",
+                "Dart",
+                "intermediate",
+                "Cross-platform mobile UI framework",
+            ),
+            (
+                "Testing",
+                "concept",
+                None,
+                "intermediate",
+                "Unit testing, integration testing and QA",
+            ),
+            (
+                "Data Validation",
+                "concept",
+                None,
+                "beginner",
+                "Input validation and schema enforcement",
+            ),
+        ]
+
+        for name, cat, lang, diff, desc in nodes_metadata:
+            graph.add_skill(
+                name,
+                category=cat,
+                language=lang,
+                difficulty=diff,
+                description=desc,
+            )
 
         # Machine Learning pathway
         # Python -> NumPy -> Pandas -> Statistics -> Machine Learning
@@ -246,10 +651,6 @@ class SkillGraphBuilder:
         ]
         for src, dst in frontend_edges:
             graph.add_relationship(src, dst, RelationshipType.PREREQUISITE)
-
-        # Quality & Testing skills
-        graph.add_skill("Testing")
-        graph.add_skill("Data Validation")
 
         # Related skills (non-redundant edges)
         related_pairs = [

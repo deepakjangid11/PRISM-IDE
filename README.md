@@ -71,6 +71,22 @@ Project Evidence + AST Artifacts ──► SkillAnalyzer ──► SkillTracker 
 
 ---
 
+### 5. Multi-Language Developer Activity Intelligence (Phase 17)
+- **Extensible Adapters**: Pluggable language adapters for Python, Java, C#, TypeScript, JavaScript, Go, Rust, C, C++, PHP, Ruby, Kotlin, Swift, Dart, SQL, HTML, CSS.
+- **`ActivityClassifier`**: Multi-dimensional activity classification categorizing development actions into backend, frontend, database, DevOps, testing, systems, and mobile.
+- **`ActivityAggregationEngine`**: Real-time aggregation of coding activities into language distributions, framework usage, and session velocities.
+
+### 6. Advanced Skill Graph, Evidence Intelligence & Skill Gap Detection (Phase 18)
+- **`SkillEvidenceEngine`**: Continuous ingestion of developer activities into verifiable `SkillEvidence` artifacts with SHA256 deduplication, event weighting, implementation complexity estimation, and filtering of non-evidential events.
+- **Advanced `SkillGraph`**: Rich `SkillNode` registry supporting multi-language metadata, category/language filtering, career role competencies (e.g. Machine Learning Engineer, Backend Developer, Full Stack Developer, Frontend Developer, Mobile Developer), and cycle-safe directed topological traversal.
+- **Proficiency Intelligence (`SkillTracker`)**: Multi-factor scoring model assessing quantity (with diminishing returns), evidence quality/strength, complexity, project diversity, and observation confidence across `insufficient_data`, `beginner`, `elementary`, `intermediate`, `advanced`, and `expert` with human-readable diagnostic explanations.
+- **`KnowledgeGapAnalyzer`**: Multi-path gap detection identifying missing prerequisites and under-proficient competencies against target technical skills and career roles.
+- **`LearningRecommendationEngine`**: Generates prioritized recommendations (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) with target proficiency goals, difficulty levels, and realistic effort estimations.
+- **`LearningPathGenerator`**: Dependency-aware topological roadmap synthesis skipping acquired prerequisites and calculating effort hours.
+- **MySQL Persistence**: Full storage integration into MySQL 8.0+ via SQLAlchemy 2.0 with zero SQLite dependencies, preserving evidence metadata and multidimensional developer skill profiles.
+
+---
+
 ## API Endpoints
 
 FastAPI endpoints are exposed under modular routers:
@@ -78,15 +94,34 @@ FastAPI endpoints are exposed under modular routers:
 - **Project Intelligence**:
   - `POST /projects/analyze`: Analyze project files and syntax.
   - `POST /projects/intelligence`: Generate full structural, dependency, and relationship intelligence.
-- **Developer Behavior & Skills**:
-  - `POST /developer/behavior`: Analyze developer behavior patterns.
-  - `POST /developer/skills/record`: Record concrete skill evidence.
-  - `GET /developer/skills/{developer_id}`: Retrieve developer skill profile.
-  - `GET /developer/skills/graph`: Export the full skill graph.
-- **Learning Intelligence**:
-  - `POST /learning/gaps`: Identify missing skill prerequisites.
-  - `POST /learning/paths`: Generate structured learning path.
-  - `POST /learning/recommendations`: Retrieve prioritized learning recommendations.
+- **Developer Identity & Working Sessions (Phase 16)**:
+  - `POST /developer/register`: Register new developer identity.
+  - `POST /developer/identify`: Resolve developer identity.
+  - `POST /developer/session/start`: Start active working session.
+  - `POST /developer/session/heartbeat`: Touch session activity heartbeat.
+  - `POST /developer/session/end`: Terminate active working session.
+  - `GET /developer/session/active/{developer_id}`: Retrieve current active session.
+  - `GET /developer/session/history/{developer_id}`: Paginated working session history.
+- **Multi-Language Developer Activity Intelligence (Phase 17)**:
+  - `POST /activity/record`: Ingest developer activity event.
+  - `POST /activity/classify`: Classify source code activity across languages.
+  - `GET /activity/developer/{developer_id}`: Retrieve developer activity stream.
+  - `GET /activity/summary/{developer_id}`: Multi-language activity intelligence summary.
+- **Advanced Skills & Intelligence (Phase 18)**:
+  - `GET /skills/profile/{developer_id}`: Retrieve multidimensional skill profile with rollups.
+  - `POST /skills/evidence`: Record verifiable skill evidence and trigger proficiency evaluation.
+  - `GET /skills/evidence/{developer_id}`: Chronological skill evidence records with filtering.
+  - `GET /skills/proficiency/{developer_id}`: Complete assessed skill competencies map.
+  - `GET /skills/proficiency/{developer_id}/{skill_id}`: Assessed proficiency and explainability reasoning for a single skill.
+  - `GET /skills/graph`: Full or filtered (category, language) skill graph topology snapshot.
+  - `GET /skills/graph/{skill_id}`: Detailed `SkillNode` metadata.
+  - `GET /skills/prerequisites/{skill_id}`: Direct or transitive prerequisite skills.
+  - `GET /skills/related/{skill_id}`: Related adjacent technical concepts.
+  - `POST /skills/gap-analysis`: Analyze competency gaps for target skill or career role.
+  - `GET /skills/gaps/{developer_id}`: Query detected gaps for developer.
+  - `GET /skills/recommendations/{developer_id}`: Prioritized, effort-estimated learning recommendations.
+  - `POST /skills/learning-path`: Generate dependency-aware topological learning path.
+  - `GET /skills/learning-path/{developer_id}`: Query tailored learning path for skill or role.
 - **Mentoring**:
   - `POST /mentoring/request`: Submit mentoring request in Build or Learn Mode.
 - **Health**:

@@ -49,6 +49,21 @@ class MySQLSkillRepository:
             skill_id = f"skill_{slug}"
             self.graph_repo.register_skill(skill_id, evidence.skill_name)
 
+        meta = dict(evidence.metadata)
+        if evidence.skill_id:
+            meta["skill_id"] = evidence.skill_id
+        if evidence.programming_language:
+            meta["programming_language"] = evidence.programming_language
+        if evidence.framework:
+            meta["framework"] = evidence.framework
+        if evidence.evidence_source:
+            meta["evidence_source"] = evidence.evidence_source
+        meta["evidence_strength"] = evidence.evidence_strength
+        meta["confidence_score"] = evidence.confidence_score
+        meta["complexity_score"] = evidence.complexity_score
+        if evidence.related_activity_id:
+            meta["related_activity_id"] = evidence.related_activity_id
+
         with session_scope(self.session_factory) as session:
             record = SkillEvidenceRecord(
                 evidence_id=evidence.evidence_id,
@@ -58,7 +73,7 @@ class MySQLSkillRepository:
                 description=evidence.description,
                 timestamp=evidence.timestamp,
                 project_path=evidence.project_path,
-                metadata_json=dict(evidence.metadata),
+                metadata_json=meta,
             )
             session.merge(record)
 
@@ -90,10 +105,30 @@ class MySQLSkillRepository:
                     evidence_id=r.evidence_id,
                     developer_id=r.developer_id,
                     skill_name=s_name,
+                    skill_id=(r.metadata_json or {}).get("skill_id"),
                     evidence_type=r.evidence_type,
                     description=r.description,
                     timestamp=r.timestamp,
                     project_path=r.project_path,
+                    programming_language=(r.metadata_json or {}).get(
+                        "programming_language"
+                    ),
+                    framework=(r.metadata_json or {}).get("framework"),
+                    evidence_source=(r.metadata_json or {}).get(
+                        "evidence_source", "direct"
+                    ),
+                    evidence_strength=float(
+                        (r.metadata_json or {}).get("evidence_strength", 1.0)
+                    ),
+                    confidence_score=float(
+                        (r.metadata_json or {}).get("confidence_score", 1.0)
+                    ),
+                    complexity_score=float(
+                        (r.metadata_json or {}).get("complexity_score", 0.5)
+                    ),
+                    related_activity_id=(r.metadata_json or {}).get(
+                        "related_activity_id"
+                    ),
                     metadata=dict(r.metadata_json or {}),
                 )
                 for r, s_name in rows
@@ -157,21 +192,33 @@ class MySQLSkillRepository:
             skills_dict: dict[str, DeveloperSkill] = {}
             for r, s_name in rows:
                 ev_list = evidence_by_skill.get(s_name.lower(), [])
-                skills_dict[s_name.lower()] = DeveloperSkill(
+                dev_skill = DeveloperSkill(
                     developer_id=dev_id,
                     skill_name=s_name,
+                    skill_id=s_name.lower().replace(" ", "_"),
                     proficiency_level=ProficiencyLevel(r.proficiency_level),
                     evidence_count=r.evidence_count,
                     evidence_list=ev_list,
                     has_sufficient_evidence=r.has_sufficient_evidence,
                     last_assessed=r.last_assessed,
                 )
+                from prism.intelligence.skill_tracker import SkillTracker
 
-            return DeveloperSkillProfile(
+                SkillTracker._evaluate_proficiency(dev_skill)
+                # Keep the persisted level if already determined
+                dev_skill.proficiency_level = ProficiencyLevel(r.proficiency_level)
+                dev_skill.has_sufficient_evidence = r.has_sufficient_evidence
+                skills_dict[s_name.lower()] = dev_skill
+
+            profile = DeveloperSkillProfile(
                 developer_id=dev_id,
                 skills=skills_dict,
                 last_updated=datetime.now(UTC),
             )
+            from prism.intelligence.skill_tracker import SkillTracker
+
+            SkillTracker._update_profile_summary(profile)
+            return profile
 
     def list_developers(self) -> list[str]:
         """Return list of all registered developer IDs."""

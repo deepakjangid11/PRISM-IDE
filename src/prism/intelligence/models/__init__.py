@@ -63,6 +63,7 @@ from prism.intelligence.models.skill_models import (
     RelationshipType,
     SkillEvidence,
     SkillGraphData,
+    SkillNode,
     SkillRelationship,
 )
 
@@ -115,6 +116,7 @@ __all__ = [
     "SessionStatus",
     "SkillEvidence",
     "SkillGraphData",
+    "SkillNode",
     "SkillRelationship",
     "StartSessionRequest",
     "TestingHabits",

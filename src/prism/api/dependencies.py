@@ -8,6 +8,7 @@ from prism.intelligence.developer_behavior_analyzer import (
 )
 from prism.intelligence.developer_identity import DeveloperIdentityService
 from prism.intelligence.developer_session import DeveloperSessionService
+from prism.intelligence.skill_evidence_engine import SkillEvidenceEngine
 from prism.intelligence.skill_graph import SkillGraph, SkillGraphBuilder
 from prism.intelligence.skill_tracker import SkillTracker
 from prism.learning.knowledge_gap_analyzer import KnowledgeGapAnalyzer
@@ -169,3 +170,34 @@ mentoring_engine = MentoringEngine(
     context_builder=context_builder,
     generator=mentor_generator,
 )
+
+# Skill Evidence Engine instance
+skill_evidence_engine = SkillEvidenceEngine(skill_tracker=skill_tracker)
+
+
+def get_skill_tracker() -> SkillTracker:
+    return skill_tracker
+
+
+def get_skill_evidence_engine() -> SkillEvidenceEngine:
+    return skill_evidence_engine
+
+
+def get_skill_graph() -> SkillGraph:
+    return skill_graph
+
+
+def get_gap_analyzer() -> KnowledgeGapAnalyzer:
+    return gap_analyzer
+
+
+def get_rec_engine() -> LearningRecommendationEngine:
+    return rec_engine
+
+
+def get_path_generator() -> LearningPathGenerator:
+    return path_generator
+
+
+def get_skill_repo() -> SkillRepository:
+    return skill_repo

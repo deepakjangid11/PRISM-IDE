@@ -402,7 +402,11 @@ class InMemorySkillRepository:
                 skills={},
                 last_updated=datetime.now(UTC),
             )
-        return self._profiles[developer_id]
+        profile = self._profiles[developer_id]
+        from prism.intelligence.skill_tracker import SkillTracker
+
+        SkillTracker._update_profile_summary(profile)
+        return profile
 
     def list_developers(self) -> list[str]:
         return sorted(self._dev_repo.list_developers())

@@ -2,6 +2,7 @@ import uuid
 
 from prism.intelligence.models.skill_models import (
     DeveloperSkillProfile,
+    ProficiencyLevel,
 )
 from prism.intelligence.skill_graph import SkillGraph, SkillGraphBuilder
 from prism.learning.models import KnowledgeGap, KnowledgeGapType
@@ -21,7 +22,7 @@ class KnowledgeGapAnalyzer:
         developer_profile: DeveloperSkillProfile,
         target_skill: str,
     ) -> list[KnowledgeGap]:
-        """Identify missing prerequisites and skills with insufficient evidence."""
+        """Identify missing prerequisites, weak concepts, and insufficient evidence for a target skill."""
         cleaned_target = target_skill.strip()
         if not cleaned_target:
             raise ValueError("Target skill must be non-empty")
@@ -60,6 +61,7 @@ class KnowledgeGapAnalyzer:
                             f"for mastering '{cleaned_target}'."
                         ),
                         severity=severity,
+                        importance_reason=f"Foundational requirement: '{cleaned_target}' directly or transitively depends on '{prereq}'.",
                     )
                 )
             elif not dev_skill.has_sufficient_evidence:
@@ -75,6 +77,26 @@ class KnowledgeGapAnalyzer:
                             f"Current level: {dev_skill.proficiency_level.value}."
                         ),
                         severity=severity,
+                        importance_reason=f"Need additional verifiable code artifacts or test cases demonstrating competence in '{prereq}'.",
+                    )
+                )
+            elif dev_skill.proficiency_level in (
+                ProficiencyLevel.BEGINNER,
+                ProficiencyLevel.ELEMENTARY,
+            ):
+                gaps.append(
+                    KnowledgeGap(
+                        gap_id=str(uuid.uuid4()),
+                        developer_id=dev_id,
+                        target_skill=cleaned_target,
+                        missing_skill=prereq,
+                        gap_type=KnowledgeGapType.LOW_PROFICIENCY,
+                        description=(
+                            f"Weak competency in prerequisite '{prereq}' "
+                            f"(current: {dev_skill.proficiency_level.value})."
+                        ),
+                        severity=severity,
+                        importance_reason=f"Advanced topics in '{cleaned_target}' require intermediate fluency in '{prereq}'.",
                     )
                 )
 
@@ -90,6 +112,7 @@ class KnowledgeGapAnalyzer:
                     gap_type=KnowledgeGapType.MISSING_PREREQUISITE,
                     description=f"No prior experience or evidence recorded for '{cleaned_target}'.",
                     severity="high",
+                    importance_reason="Target goal has not yet been started.",
                 )
             )
         elif not target_dev_skill.has_sufficient_evidence:
@@ -100,17 +123,39 @@ class KnowledgeGapAnalyzer:
                     target_skill=cleaned_target,
                     missing_skill=cleaned_target,
                     gap_type=KnowledgeGapType.INSUFFICIENT_EVIDENCE,
-                    description=(
-                        f"Target skill '{cleaned_target}' has insufficient evidence "
-                        f"({target_dev_skill.evidence_count} evidence items)."
-                    ),
-                    severity="medium",
+                    description=f"Initial evidence for '{cleaned_target}' is insufficient for mastery.",
+                    severity="high",
+                    importance_reason="Target goal requires practical project features and test validation.",
                 )
             )
 
-        logger.info(
-            "Identified %d knowledge gaps for '%s'",
-            len(gaps),
-            cleaned_target,
-        )
         return gaps
+
+    def identify_role_gaps(
+        self,
+        developer_profile: DeveloperSkillProfile,
+        target_role: str,
+    ) -> list[KnowledgeGap]:
+        """Analyze developer competencies against all skills required for a career role."""
+        cleaned_role = target_role.strip()
+        if not cleaned_role:
+            raise ValueError("Target role must be non-empty")
+
+        required_skills = self.skill_graph.get_role_skills(cleaned_role)
+        if not required_skills:
+            raise ValueError(f"Unknown career role: '{cleaned_role}'")
+
+        all_gaps: list[KnowledgeGap] = []
+        seen_skills: set[str] = set()
+
+        for skill in required_skills:
+            skill_gaps = self.identify_gaps(developer_profile, skill)
+            for g in skill_gaps:
+                if g.missing_skill.lower() not in seen_skills:
+                    seen_skills.add(g.missing_skill.lower())
+                    g.importance_reason = (
+                        f"Required for role '{cleaned_role}' (supports '{skill}')."
+                    )
+                    all_gaps.append(g)
+
+        return all_gaps

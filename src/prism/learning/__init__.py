@@ -6,6 +6,7 @@ from prism.learning.models import (
     LearningPath,
     LearningProgress,
     LearningRecommendation,
+    RecommendationPriority,
 )
 from prism.learning.progress_tracker import LearningProgressTracker
 from prism.learning.recommendation_engine import LearningRecommendationEngine
@@ -20,4 +21,5 @@ __all__ = [
     "LearningProgressTracker",
     "LearningRecommendation",
     "LearningRecommendationEngine",
+    "RecommendationPriority",
 ]
