@@ -85,11 +85,50 @@ Project Evidence + AST Artifacts ──► SkillAnalyzer ──► SkillTracker 
 - **`LearningPathGenerator`**: Dependency-aware topological roadmap synthesis skipping acquired prerequisites and calculating effort hours.
 - **MySQL Persistence**: Full storage integration into MySQL 8.0+ via SQLAlchemy 2.0 with zero SQLite dependencies, preserving evidence metadata and multidimensional developer skill profiles.
 
+### 7. Advanced Developer Intelligence & Adaptive Mentoring (Phase 19)
+- **`DeveloperIntelligenceEngine`**: Synthesizes behavioral telemetry, skill proficiency, error frequency, and learning trends into comprehensive developer profiles with categorized insights (strengths, gaps, recurring errors) and trend trajectories.
+- **`AdaptiveMentoringEngine`**: Delivers personalized mentoring by dynamically adjusting strategies (`conceptual_explanation`, `guided_implementation`, `debugging_guidance`, `step_by_step_learning`, `practical_exercise`, `advanced_technical_guidance`) and measures mentoring effectiveness over time.
+- **`TaskRecommendationEngine`**: Generates targeted coding tasks tailored to active competency gaps, tracking lifecycle progress and converting successful task evaluations into verifiable `SkillEvidence`.
+- **`DeveloperPerformanceAnalytics`**: Calculates role readiness scores, skill improvement velocities, and persists point-in-time performance snapshots.
+- **`IntelligentFeedbackEngine` & `LearningAdaptationEngine`**: Produces contextual constructive feedback and recalibrates pedagogical learning strategies based on developer progress.
+- **`CrossModuleIntelligenceOrchestrator`**: Unifies telemetry ingestion and synchronization across activity, skill, gap, task, and mentoring engines.
+
 ---
 
 ## API Endpoints
 
 FastAPI endpoints are exposed under modular routers:
+
+- **Developer Intelligence & Orchestration (Phase 19)**:
+  - `GET /intelligence/profile/{developer_id}`: Comprehensive developer intelligence profile.
+  - `GET /intelligence/insights/{developer_id}`: Categorized strengths, gaps, and error insights.
+  - `GET /intelligence/trends/{developer_id}`: Skill proficiency trajectories and velocity.
+  - `POST /intelligence/refresh/{developer_id}`: Force re-analysis and profile refresh.
+  - `POST /intelligence/orchestrate/activity`: Orchestrate telemetry ingestion and recalibration.
+  - `POST /intelligence/orchestrate/sync`: Synchronize profile, gaps, tasks, and strategy for a developer.
+- **Personalized Tasks (Phase 19)**:
+  - `POST /tasks/generate`: Generate gap-targeted personalized tasks.
+  - `GET /tasks/recommendations/{developer_id}`: Query recommended tasks for a developer.
+  - `GET /tasks/{task_id}`: Fetch task details.
+  - `PATCH /tasks/{task_id}/status`: Update task progress status and execution notes.
+  - `POST /tasks/{task_id}/evaluate`: Evaluate task completion, record outcome, and generate verifiable skill evidence.
+- **Performance Analytics (Phase 19)**:
+  - `GET /analytics/performance/{developer_id}`: Overview analytics with role readiness.
+  - `GET /analytics/improvement/{developer_id}`: Longitudinal skill improvement velocity.
+  - `GET /analytics/learning/{developer_id}`: Learning progress and task completion rates.
+  - `GET /analytics/history/{developer_id}`: Historical performance snapshots.
+- **Intelligent Feedback (Phase 19)**:
+  - `GET /feedback/{developer_id}`: Recent proactive feedback for developer.
+  - `POST /feedback/generate`: Generate contextual feedback.
+  - `GET /feedback/history/{developer_id}`: Longitudinal feedback history.
+- **Learning Adaptation (Phase 19)**:
+  - `POST /adaptation/adapt`: Recalibrate pedagogical learning strategy.
+  - `GET /adaptation/strategy/{developer_id}`: Retrieve active learning strategy.
+  - `GET /adaptation/history/{developer_id}`: Adaptation history logs.
+- **Adaptive Mentoring (Phase 19)**:
+  - `POST /mentoring/adaptive`: Request personalized, strategy-tailored mentoring.
+  - `GET /mentoring/history/{developer_id}`: Historical mentoring session logs.
+  - `GET /mentoring/effectiveness/{developer_id}`: Quantified mentoring effectiveness score and strategy distribution.
 
 - **Project Intelligence**:
   - `POST /projects/analyze`: Analyze project files and syntax.

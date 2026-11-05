@@ -11,6 +11,14 @@ if TYPE_CHECKING:
     from prism.intelligence.models.developer_identity_models import (
         DeveloperSession,
     )
+    from prism.intelligence.models.developer_intelligence_models import (
+        DeveloperFeedback,
+        DeveloperInsight,
+        DeveloperPerformanceSnapshot,
+        LearningAdaptation,
+        PersonalizedTask,
+        TaskOutcome,
+    )
     from prism.intelligence.models.skill_models import (
         DeveloperSkill,
         DeveloperSkillProfile,
@@ -18,6 +26,7 @@ if TYPE_CHECKING:
         SkillRelationship,
     )
     from prism.learning.models import LearningProgress
+    from prism.mentoring.models import MentoringSessionRecord
 
 
 class DeveloperRepository(Protocol):
@@ -229,4 +238,100 @@ class LearningRepository(Protocol):
         self, developer_id: str, target_goal: str | None = None
     ) -> list[dict[str, Any]]:
         """Retrieve point-in-time progression checkpoints."""
+        ...
+
+
+class IntelligenceRepository(Protocol):
+    """Protocol for developer intelligence, tasks, feedback, and mentoring records."""
+
+    def save_insight(self, insight: DeveloperInsight) -> None:
+        """Persist structured developer insight."""
+        ...
+
+    def get_insights(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperInsight]:
+        """Fetch developer insights in reverse chronological order."""
+        ...
+
+    def save_snapshot(self, snapshot: DeveloperPerformanceSnapshot) -> None:
+        """Persist performance checkpoint."""
+        ...
+
+    def get_snapshots(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperPerformanceSnapshot]:
+        """Fetch performance snapshots in reverse chronological order."""
+        ...
+
+    def get_latest_snapshot(
+        self, developer_id: str
+    ) -> DeveloperPerformanceSnapshot | None:
+        """Fetch most recent performance snapshot."""
+        ...
+
+    def save_task(self, task: PersonalizedTask) -> None:
+        """Persist personalized learning task."""
+        ...
+
+    def get_task(self, task_id: str) -> PersonalizedTask | None:
+        """Fetch personalized task by ID."""
+        ...
+
+    def get_tasks_for_developer(
+        self,
+        developer_id: str,
+        status: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> list[PersonalizedTask]:
+        """Fetch personalized tasks for developer, optionally filtered by status."""
+        ...
+
+    def update_task_status(self, task_id: str, status: str) -> PersonalizedTask | None:
+        """Update task lifecycle status."""
+        ...
+
+    def save_task_outcome(self, outcome: TaskOutcome) -> None:
+        """Record executed task outcome."""
+        ...
+
+    def get_task_outcomes(
+        self, developer_id: str, task_id: str | None = None
+    ) -> list[TaskOutcome]:
+        """Fetch task outcomes."""
+        ...
+
+    def save_feedback(self, feedback: DeveloperFeedback) -> None:
+        """Persist developer feedback."""
+        ...
+
+    def get_feedbacks(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperFeedback]:
+        """Fetch developer feedback records."""
+        ...
+
+    def save_mentoring_session(self, session: MentoringSessionRecord) -> None:
+        """Persist adaptive mentoring interaction record."""
+        ...
+
+    def get_mentoring_sessions(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[MentoringSessionRecord]:
+        """Fetch mentoring sessions for developer."""
+        ...
+
+    def save_adaptation(self, adaptation: LearningAdaptation) -> None:
+        """Persist learning adaptation event."""
+        ...
+
+    def get_adaptations(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[LearningAdaptation]:
+        """Fetch learning adaptations for developer."""
+        ...
+
+    def get_latest_adaptation(self, developer_id: str) -> LearningAdaptation | None:
+        """Fetch most recent learning adaptation."""
         ...

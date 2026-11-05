@@ -7,15 +7,32 @@ from prism.intelligence.developer_behavior_analyzer import (
     DeveloperBehaviorAnalyzer,
 )
 from prism.intelligence.developer_identity import DeveloperIdentityService
+from prism.intelligence.developer_intelligence_engine import (
+    DeveloperIntelligenceEngine,
+)
 from prism.intelligence.developer_session import DeveloperSessionService
+from prism.intelligence.intelligence_orchestrator import (
+    CrossModuleIntelligenceOrchestrator,
+)
+from prism.intelligence.intelligent_feedback_engine import (
+    IntelligentFeedbackEngine,
+)
+from prism.intelligence.performance_analytics import (
+    DeveloperPerformanceAnalytics,
+)
 from prism.intelligence.skill_evidence_engine import SkillEvidenceEngine
 from prism.intelligence.skill_graph import SkillGraph, SkillGraphBuilder
 from prism.intelligence.skill_tracker import SkillTracker
+from prism.intelligence.task_recommendation_engine import (
+    TaskRecommendationEngine,
+)
 from prism.learning.knowledge_gap_analyzer import KnowledgeGapAnalyzer
+from prism.learning.learning_adaptation_engine import LearningAdaptationEngine
 from prism.learning.learning_path_generator import LearningPathGenerator
 from prism.learning.progress_tracker import LearningProgressTracker
 from prism.learning.recommendation_engine import LearningRecommendationEngine
 from prism.logging.logger import get_logger
+from prism.mentoring.adaptive_engine import AdaptiveMentoringEngine
 from prism.mentoring.context_builder import MentorContextBuilder
 from prism.mentoring.engine import MentoringEngine
 from prism.mentoring.response_generator import DeterministicMentorGenerator
@@ -25,6 +42,7 @@ from prism.storage.repositories.base import (
     ActivityRepository,
     DeveloperRepository,
     DeveloperSessionRepository,
+    IntelligenceRepository,
     LearningRepository,
     SkillGraphRepository,
     SkillRepository,
@@ -32,6 +50,7 @@ from prism.storage.repositories.base import (
 from prism.storage.repositories.memory_repo import (
     InMemoryActivityRepository,
     InMemoryDeveloperRepository,
+    InMemoryIntelligenceRepository,
     InMemoryLearningRepository,
     InMemorySessionRepository,
     InMemorySkillGraphRepository,
@@ -44,6 +63,9 @@ from prism.storage.repositories.mysql_developer_repo import (
     MySQLDeveloperRepository,
 )
 from prism.storage.repositories.mysql_graph_repo import MySQLSkillGraphRepository
+from prism.storage.repositories.mysql_intelligence_repo import (
+    MySQLIntelligenceRepository,
+)
 from prism.storage.repositories.mysql_learning_repo import (
     MySQLLearningRepository,
 )
@@ -109,6 +131,33 @@ def init_storage_repositories(
     )
 
 
+def init_intelligence_repository(
+    backend: str | None = None,
+) -> IntelligenceRepository:
+    """Initialize intelligence repository based on storage backend configuration."""
+    selected_backend = (backend or settings.storage_backend).strip().lower()
+
+    if selected_backend == "memory":
+        return InMemoryIntelligenceRepository()
+
+    if selected_backend == "mysql":
+        if not check_db_connection():
+            error_msg = (
+                f"CRITICAL: Failed to connect to MySQL database at "
+                f"{settings.db_host}:{settings.db_port}/{settings.db_name} "
+                "for intelligence repository."
+            )
+            logger.critical(error_msg)
+            raise RuntimeError(error_msg)
+
+        sf = get_session_factory()
+        return MySQLIntelligenceRepository(sf)
+
+    raise ValueError(
+        f"Unsupported storage backend '{selected_backend}'. Expected 'mysql' or 'memory'."
+    )
+
+
 # Storage layer repository wiring
 (
     developer_repo,
@@ -118,6 +167,8 @@ def init_storage_repositories(
     learning_repo,
     session_repo,
 ) = init_storage_repositories()
+
+intelligence_repo = init_intelligence_repository()
 
 # Developer identity and session services
 identity_service = DeveloperIdentityService(developer_repo=developer_repo)
@@ -139,9 +190,7 @@ activity_intelligence_service = DeveloperActivityIntelligenceService(
     session_service=session_service,
 )
 
-# Skill graph initialization:
-# In MySQL mode, loads existing persistent graph topology without re-inserting on startup.
-# In Memory mode, populates the default curriculum graph for testing.
+# Skill graph initialization
 if settings.storage_backend.strip().lower() == "mysql":
     skill_graph = SkillGraph(repository=graph_repo)
 else:
@@ -174,6 +223,62 @@ mentoring_engine = MentoringEngine(
 # Skill Evidence Engine instance
 skill_evidence_engine = SkillEvidenceEngine(skill_tracker=skill_tracker)
 
+# Phase 19 Developer Intelligence & Adaptive Mentoring Engines
+intelligence_engine = DeveloperIntelligenceEngine(
+    intelligence_repo=intelligence_repo,
+    skill_tracker=skill_tracker,
+    activity_repo=activity_repo,
+    gap_analyzer=gap_analyzer,
+)
+
+performance_analytics = DeveloperPerformanceAnalytics(
+    intelligence_engine=intelligence_engine,
+    skill_tracker=skill_tracker,
+    skill_graph=skill_graph,
+    intelligence_repo=intelligence_repo,
+    learning_repo=learning_repo,
+    activity_repo=activity_repo,
+)
+
+task_engine = TaskRecommendationEngine(
+    skill_tracker=skill_tracker,
+    gap_analyzer=gap_analyzer,
+    skill_graph=skill_graph,
+    intelligence_repo=intelligence_repo,
+)
+
+feedback_engine = IntelligentFeedbackEngine(
+    intelligence_repo=intelligence_repo,
+    intelligence_engine=intelligence_engine,
+)
+
+adaptation_engine = LearningAdaptationEngine(
+    intelligence_repo=intelligence_repo,
+    intelligence_engine=intelligence_engine,
+    gap_analyzer=gap_analyzer,
+)
+
+adaptive_mentoring_engine = AdaptiveMentoringEngine(
+    intelligence_repo=intelligence_repo,
+    base_mentor_engine=mentoring_engine,
+    intelligence_engine=intelligence_engine,
+    task_engine=task_engine,
+)
+
+intelligence_orchestrator = CrossModuleIntelligenceOrchestrator(
+    intelligence_repo=intelligence_repo,
+    intelligence_engine=intelligence_engine,
+    performance_analytics=performance_analytics,
+    task_engine=task_engine,
+    feedback_engine=feedback_engine,
+    adaptation_engine=adaptation_engine,
+    adaptive_mentor=adaptive_mentoring_engine,
+    skill_evidence_engine=skill_evidence_engine,
+    skill_tracker=skill_tracker,
+    gap_analyzer=gap_analyzer,
+    session_service=session_service,
+)
+
 
 def get_skill_tracker() -> SkillTracker:
     return skill_tracker
@@ -201,3 +306,35 @@ def get_path_generator() -> LearningPathGenerator:
 
 def get_skill_repo() -> SkillRepository:
     return skill_repo
+
+
+def get_intelligence_repo() -> IntelligenceRepository:
+    return intelligence_repo
+
+
+def get_intelligence_engine() -> DeveloperIntelligenceEngine:
+    return intelligence_engine
+
+
+def get_performance_analytics() -> DeveloperPerformanceAnalytics:
+    return performance_analytics
+
+
+def get_task_engine() -> TaskRecommendationEngine:
+    return task_engine
+
+
+def get_feedback_engine() -> IntelligentFeedbackEngine:
+    return feedback_engine
+
+
+def get_adaptation_engine() -> LearningAdaptationEngine:
+    return adaptation_engine
+
+
+def get_adaptive_mentoring_engine() -> AdaptiveMentoringEngine:
+    return adaptive_mentoring_engine
+
+
+def get_intelligence_orchestrator() -> CrossModuleIntelligenceOrchestrator:
+    return intelligence_orchestrator

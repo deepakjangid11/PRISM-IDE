@@ -5,6 +5,15 @@ from prism.intelligence.models.developer_behavior_models import (
     DeveloperActivity,
 )
 from prism.intelligence.models.developer_identity_models import DeveloperSession
+from prism.intelligence.models.developer_intelligence_models import (
+    DeveloperFeedback,
+    DeveloperInsight,
+    DeveloperPerformanceSnapshot,
+    LearningAdaptation,
+    PersonalizedTask,
+    TaskOutcome,
+    TaskStatus,
+)
 from prism.intelligence.models.skill_models import (
     DeveloperSkill,
     DeveloperSkillProfile,
@@ -12,6 +21,7 @@ from prism.intelligence.models.skill_models import (
     SkillRelationship,
 )
 from prism.learning.models import LearningProgress
+from prism.mentoring.models import MentoringSessionRecord
 
 
 class InMemoryDeveloperRepository:
@@ -496,3 +506,154 @@ class InMemoryLearningRepository:
             if h["developer_id"] == developer_id
             and (target_goal is None or h["target_goal"] == target_goal)
         ]
+
+
+class InMemoryIntelligenceRepository:
+    """In-memory implementation of IntelligenceRepository for testing and offline execution."""
+
+    def __init__(self, dev_repo: InMemoryDeveloperRepository | None = None) -> None:
+        self._dev_repo = dev_repo or InMemoryDeveloperRepository()
+        self._insights: list[DeveloperInsight] = []
+        self._snapshots: list[DeveloperPerformanceSnapshot] = []
+        self._tasks: dict[str, PersonalizedTask] = {}
+        self._task_outcomes: list[TaskOutcome] = []
+        self._feedbacks: list[DeveloperFeedback] = []
+        self._mentoring_sessions: list[MentoringSessionRecord] = []
+        self._adaptations: list[LearningAdaptation] = []
+
+    def save_insight(self, insight: DeveloperInsight) -> None:
+        self._dev_repo.ensure_developer(insight.developer_id)
+        self._insights.append(insight)
+
+    def get_insights(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperInsight]:
+        matched = [i for i in self._insights if i.developer_id == developer_id]
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[offset : offset + limit]
+
+    def save_snapshot(self, snapshot: DeveloperPerformanceSnapshot) -> None:
+        self._dev_repo.ensure_developer(snapshot.developer_id)
+        self._snapshots.append(snapshot)
+
+    def get_snapshots(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperPerformanceSnapshot]:
+        matched = [s for s in self._snapshots if s.developer_id == developer_id]
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[offset : offset + limit]
+
+    def get_latest_snapshot(
+        self, developer_id: str
+    ) -> DeveloperPerformanceSnapshot | None:
+        matched = [s for s in self._snapshots if s.developer_id == developer_id]
+        if not matched:
+            return None
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[0]
+
+    def save_task(self, task: PersonalizedTask) -> None:
+        self._dev_repo.ensure_developer(task.developer_id)
+        self._tasks[task.task_id] = task
+
+    def get_task(self, task_id: str) -> PersonalizedTask | None:
+        return self._tasks.get(task_id)
+
+    def get_tasks_for_developer(
+        self,
+        developer_id: str,
+        status: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> list[PersonalizedTask]:
+        matched = [
+            t
+            for t in self._tasks.values()
+            if t.developer_id == developer_id
+            and (status is None or t.status.value == status or t.status == status)
+        ]
+        matched.sort(key=lambda x: x.created_at, reverse=True)
+        return matched[offset : offset + limit]
+
+    def update_task_status(self, task_id: str, status: str) -> PersonalizedTask | None:
+        task = self._tasks.get(task_id)
+        if not task:
+            return None
+        now = datetime.now(UTC)
+        updated = PersonalizedTask(
+            task_id=task.task_id,
+            developer_id=task.developer_id,
+            title=task.title,
+            description=task.description,
+            target_skill=task.target_skill,
+            difficulty=task.difficulty,
+            priority=task.priority,
+            status=TaskStatus(status) if isinstance(status, str) else status,
+            estimated_minutes=task.estimated_minutes,
+            target_role=task.target_role,
+            prerequisite_skills=task.prerequisite_skills,
+            reason=task.reason,
+            acceptance_criteria=task.acceptance_criteria,
+            created_at=task.created_at,
+            updated_at=now,
+        )
+        self._tasks[task_id] = updated
+        return updated
+
+    def save_task_outcome(self, outcome: TaskOutcome) -> None:
+        self._dev_repo.ensure_developer(outcome.developer_id)
+        self._task_outcomes.append(outcome)
+
+    def get_task_outcomes(
+        self, developer_id: str, task_id: str | None = None
+    ) -> list[TaskOutcome]:
+        matched = [
+            o
+            for o in self._task_outcomes
+            if o.developer_id == developer_id
+            and (task_id is None or o.task_id == task_id)
+        ]
+        matched.sort(key=lambda x: x.recorded_at, reverse=True)
+        return matched
+
+    def save_feedback(self, feedback: DeveloperFeedback) -> None:
+        self._dev_repo.ensure_developer(feedback.developer_id)
+        self._feedbacks.append(feedback)
+
+    def get_feedbacks(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperFeedback]:
+        matched = [f for f in self._feedbacks if f.developer_id == developer_id]
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[offset : offset + limit]
+
+    def save_mentoring_session(self, session: MentoringSessionRecord) -> None:
+        self._dev_repo.ensure_developer(session.developer_id)
+        self._mentoring_sessions.append(session)
+
+    def get_mentoring_sessions(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[MentoringSessionRecord]:
+        matched = [
+            s for s in self._mentoring_sessions if s.developer_id == developer_id
+        ]
+        matched.sort(key=lambda x: x.created_at, reverse=True)
+        return matched[offset : offset + limit]
+
+    def save_adaptation(self, adaptation: LearningAdaptation) -> None:
+        self._dev_repo.ensure_developer(adaptation.developer_id)
+        self._adaptations.append(adaptation)
+
+    def get_adaptations(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[LearningAdaptation]:
+        matched = [a for a in self._adaptations if a.developer_id == developer_id]
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[offset : offset + limit]
+
+    def get_latest_adaptation(self, developer_id: str) -> LearningAdaptation | None:
+        matched = [a for a in self._adaptations if a.developer_id == developer_id]
+        if not matched:
+            return None
+        matched.sort(key=lambda x: x.timestamp, reverse=True)
+        return matched[0]

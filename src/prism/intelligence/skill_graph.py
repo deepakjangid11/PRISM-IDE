@@ -297,8 +297,12 @@ class SkillGraph:
 
     def get_role_skills(self, role_name: str) -> list[str]:
         """Return skills required for a specific career role."""
+        norm = role_name.lower().strip().replace("_", " ")
         for name, skills in ROLE_SKILLS_MAP.items():
-            if name.lower() == role_name.lower().strip():
+            if (
+                name.lower() == norm
+                or name.lower().replace(" ", "_") == role_name.lower().strip()
+            ):
                 return list(skills)
         return []
 

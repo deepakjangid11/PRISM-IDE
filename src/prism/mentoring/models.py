@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -92,3 +93,91 @@ class MentorResponse(BaseModel):
             return getattr(self, item)
         except AttributeError as error:
             raise KeyError(item) from error
+
+
+# =========================================================================
+# ADAPTIVE MENTORING MODELS (PHASE 19)
+# =========================================================================
+
+
+class MentoringStrategy(StrEnum):
+    """Dynamic instructional strategy selected for adaptive mentoring."""
+
+    CONCEPTUAL_EXPLANATION = "conceptual_explanation"
+    GUIDED_IMPLEMENTATION = "guided_implementation"
+    STEP_BY_STEP_LEARNING = "step_by_step_learning"
+    DEBUGGING_GUIDANCE = "debugging_guidance"
+    PRACTICAL_EXERCISE = "practical_exercise"
+    ADVANCED_TECHNICAL_GUIDANCE = "advanced_technical_guidance"
+
+
+class AdaptiveMentorRequest(BaseModel):
+    """Developer request for adaptive, level-tailored mentoring."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    developer_id: str
+    query: str
+    project_path: str | None = None
+    target_skill: str | None = None
+    preferred_strategy: MentoringStrategy | None = None
+    context_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class AdaptiveMentorResponse(BaseModel):
+    """Adaptive mentoring response tailored to developer proficiency and context."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    developer_id: str
+    selected_strategy: MentoringStrategy
+    explanation_complexity: str
+    mentoring_difficulty: str
+    summary: str
+    explanation: str
+    actionable_steps: list[str] = Field(default_factory=list)
+    targeted_knowledge_gaps: list[str] = Field(default_factory=list)
+    recommended_tasks: list[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    def __getitem__(self, item: str) -> Any:
+        try:
+            return getattr(self, item)
+        except AttributeError as error:
+            raise KeyError(item) from error
+
+
+class MentoringSessionRecord(BaseModel):
+    """Persisted record of an adaptive mentoring interaction."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    developer_id: str
+    strategy: MentoringStrategy
+    query: str
+    target_skill: str | None = None
+    summary: str
+    outcome_rating: float | None = None
+    outcome_notes: str | None = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    def __getitem__(self, item: str) -> Any:
+        try:
+            return getattr(self, item)
+        except AttributeError as error:
+            raise KeyError(item) from error
+
+
+class MentoringEffectiveness(BaseModel):
+    """Aggregated effectiveness analytics for developer mentoring interactions."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    developer_id: str
+    total_sessions: int = 0
+    average_rating: float = 0.0
+    strategy_distribution: dict[str, int] = Field(default_factory=dict)
+    skill_improvements_correlated: int = 0
+    effectiveness_score: float = 0.0
