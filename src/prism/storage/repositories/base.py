@@ -84,6 +84,19 @@ class ActivityRepository(Protocol):
         """Fetch recorded activities associated with a specific working session."""
         ...
 
+    def get_history(
+        self,
+        developer_id: str,
+        project_path: str | None = None,
+        session_id: str | None = None,
+        language: str | None = None,
+        category: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[list[DeveloperActivity], int]:
+        """Fetch filtered and paginated activities with total count."""
+        ...
+
     def clear(self, developer_id: str | None = None) -> None:
         """Remove recorded activities, optionally filtered by developer."""
         ...

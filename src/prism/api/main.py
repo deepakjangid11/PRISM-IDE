@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from prism.api.routes.activity import router as activity_router
 from prism.api.routes.developer import router as developer_router
 from prism.api.routes.learning import router as learning_router
 from prism.api.routes.mentoring import router as mentoring_router
@@ -20,6 +21,7 @@ app = FastAPI(
 app.include_router(project_router)
 app.include_router(developer_router)
 app.include_router(session_router)
+app.include_router(activity_router)
 app.include_router(learning_router)
 app.include_router(mentoring_router)
 

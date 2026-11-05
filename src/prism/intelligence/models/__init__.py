@@ -1,3 +1,17 @@
+from prism.intelligence.models.activity_classification_models import (
+    ActivityCategory,
+    ActivityClassification,
+    ActivityIngestRequest,
+    ActivityResponse,
+    ActivitySummaryResponse,
+    BatchActivityIngestRequest,
+    CategoryDistributionItem,
+    ConceptDistributionItem,
+    FrameworkDistributionItem,
+    LanguageDistributionItem,
+    PaginatedActivityResponse,
+    ProgrammingLanguage,
+)
 from prism.intelligence.models.activity_metrics_models import ActivityMetrics
 from prism.intelligence.models.activity_session_models import (
     ActivitySession,
@@ -53,12 +67,20 @@ from prism.intelligence.models.skill_models import (
 )
 
 __all__ = [
+    "ActivityCategory",
+    "ActivityClassification",
     "ActivityDistribution",
+    "ActivityIngestRequest",
     "ActivityMetrics",
+    "ActivityResponse",
     "ActivitySession",
     "ActivitySessionMetrics",
+    "ActivitySummaryResponse",
+    "BatchActivityIngestRequest",
+    "CategoryDistributionItem",
     "ClassRelationship",
     "CodeRelationshipAnalysis",
+    "ConceptDistributionItem",
     "ContextClass",
     "ContextFailedFile",
     "ContextFile",
@@ -77,10 +99,14 @@ __all__ = [
     "DeveloperUpdateRequest",
     "EndSessionRequest",
     "FailedDependencyFile",
+    "FrameworkDistributionItem",
     "FunctionCall",
     "FunctionRelationship",
     "HeartbeatRequest",
+    "LanguageDistributionItem",
+    "PaginatedActivityResponse",
     "ProficiencyLevel",
+    "ProgrammingLanguage",
     "ProjectContext",
     "ProjectIntelligence",
     "ProjectIntelligenceSummary",

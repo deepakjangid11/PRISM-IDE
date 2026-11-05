@@ -1,4 +1,7 @@
 from prism.config.settings import settings
+from prism.intelligence.activity_intelligence_service import (
+    DeveloperActivityIntelligenceService,
+)
 from prism.intelligence.developer_activity import ActivityRecorder
 from prism.intelligence.developer_behavior_analyzer import (
     DeveloperBehaviorAnalyzer,
@@ -126,6 +129,12 @@ session_service = DeveloperSessionService(
 # Activity recorder service wired to persistent repository and session service
 activity_recorder = ActivityRecorder(
     repository=activity_repo,
+    session_service=session_service,
+)
+
+# Multi-language Developer Activity Intelligence service
+activity_intelligence_service = DeveloperActivityIntelligenceService(
+    activity_repo=activity_repo,
     session_service=session_service,
 )
 

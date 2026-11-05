@@ -139,6 +139,48 @@ class InMemoryActivityRepository:
     def get_by_session(self, session_id: str) -> list[DeveloperActivity]:
         return [a for a in self._activities if a.session_id == session_id]
 
+    def get_history(
+        self,
+        developer_id: str,
+        project_path: str | None = None,
+        session_id: str | None = None,
+        language: str | None = None,
+        category: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[list[DeveloperActivity], int]:
+        matched = [
+            a
+            for a in self._activities
+            if a.developer_id == developer_id
+            and (project_path is None or a.project_path == project_path)
+            and (session_id is None or a.session_id == session_id)
+        ]
+        if language:
+            lang_lower = language.lower().strip()
+            matched = [
+                a
+                for a in matched
+                if (
+                    a.metadata.get("classification", {}).get("language", "").lower()
+                    == lang_lower
+                    or a.metadata.get("language", "").lower() == lang_lower
+                )
+            ]
+        if category:
+            cat_lower = category.lower().strip()
+            matched = [
+                a
+                for a in matched
+                if a.metadata.get("classification", {}).get("category", "").lower()
+                == cat_lower
+            ]
+
+        # Reverse chronological
+        matched.sort(key=lambda a: a.timestamp, reverse=True)
+        total_count = len(matched)
+        return matched[offset : offset + limit], total_count
+
     def clear(self, developer_id: str | None = None) -> None:
         if developer_id is None:
             self._activities.clear()

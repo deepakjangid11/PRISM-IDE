@@ -93,6 +93,72 @@ class MySQLActivityRepository:
                 for r in records
             ]
 
+    def get_history(
+        self,
+        developer_id: str,
+        project_path: str | None = None,
+        session_id: str | None = None,
+        language: str | None = None,
+        category: str | None = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[list[DeveloperActivity], int]:
+        """Fetch filtered and paginated activities with total count."""
+        with session_scope(self.session_factory) as session:
+            stmt = select(DeveloperActivityRecord).where(
+                DeveloperActivityRecord.developer_id == developer_id.strip()
+            )
+            if project_path:
+                stmt = stmt.where(
+                    DeveloperActivityRecord.project_path == project_path.strip()
+                )
+            if session_id:
+                stmt = stmt.where(
+                    DeveloperActivityRecord.session_id == session_id.strip()
+                )
+
+            records = session.scalars(
+                stmt.order_by(DeveloperActivityRecord.timestamp.desc())
+            ).all()
+
+            activities = [
+                DeveloperActivity(
+                    event_id=r.event_id,
+                    developer_id=r.developer_id,
+                    project_path=r.project_path,
+                    event_type=r.event_type,
+                    timestamp=r.timestamp,
+                    file_path=r.file_path,
+                    session_id=r.session_id,
+                    metadata=dict(r.metadata_json or {}),
+                )
+                for r in records
+            ]
+
+            if language:
+                lang_lower = language.lower().strip()
+                activities = [
+                    a
+                    for a in activities
+                    if (
+                        a.metadata.get("classification", {}).get("language", "").lower()
+                        == lang_lower
+                        or a.metadata.get("language", "").lower() == lang_lower
+                    )
+                ]
+            if category:
+                cat_lower = category.lower().strip()
+                activities = [
+                    a
+                    for a in activities
+                    if a.metadata.get("classification", {}).get("category", "").lower()
+                    == cat_lower
+                ]
+
+            total_count = len(activities)
+            paged = activities[offset : offset + limit]
+            return paged, total_count
+
     def get_by_session(self, session_id: str) -> list[DeveloperActivity]:
         """Fetch chronological activities associated with a specific session."""
         with session_scope(self.session_factory) as session:

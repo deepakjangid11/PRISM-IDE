@@ -115,6 +115,13 @@ class DeveloperSessionService:
         )
         return new_session
 
+    def get_session(self, session_id: str) -> DeveloperSession | None:
+        """Retrieve a session by its unique session ID."""
+        cleaned_id = session_id.strip()
+        if not cleaned_id:
+            return None
+        return self.session_repo.get_session(cleaned_id)
+
     def send_heartbeat(
         self,
         session_id: str,
