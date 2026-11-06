@@ -345,3 +345,27 @@ async def test_rag_service_index_project_read_error(tmp_path: Path) -> None:
     with patch.object(Path, "read_text", side_effect=OSError("Read failure")):
         count = await service.index_project(str(proj_dir))
         assert count == 0
+
+
+@pytest.mark.anyio
+async def test_rag_service_document_update_and_deletion(tmp_path: Path) -> None:
+    service = RAGService()
+    test_file = tmp_path / "update_test.py"
+    test_file.write_text("def v1(): return 1\n", encoding="utf-8")
+
+    # Initial index
+    c1 = await service.index_file(str(test_file))
+    assert c1 >= 1
+    assert service.vector_store.count() >= 1
+
+    # Update file content and re-index
+    test_file.write_text("def v2(): return 2\n", encoding="utf-8")
+    c2 = await service.index_file(str(test_file))
+    assert c2 >= 1
+    # Old chunks should have been cleared, count should remain consistent
+    assert service.vector_store.count() == c2
+
+    # Delete file
+    deleted = service.delete_file(str(test_file))
+    assert deleted == c2
+    assert service.vector_store.count() == 0

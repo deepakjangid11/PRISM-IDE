@@ -135,6 +135,17 @@ class VectorStore:
 
         return results
 
+    def delete_file(self, file_path: str) -> int:
+        """Remove all chunks associated with a specific file."""
+        to_remove = [
+            cid for cid, chk in self._chunks.items() if chk.file_path == file_path
+        ]
+        for cid in to_remove:
+            del self._chunks[cid]
+        if to_remove and self.storage_path:
+            self.save()
+        return len(to_remove)
+
     def delete_project(self, project_path: str) -> int:
         """Remove all chunks associated with a specific project directory."""
         to_remove = [

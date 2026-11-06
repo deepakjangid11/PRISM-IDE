@@ -2473,6 +2473,35 @@
           "response": []
         },
         {
+          "name": "Handle Mcp Jsonrpc",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mcp/rpc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mcp",
+                "rpc"
+              ],
+              "query": []
+            },
+            "description": "Standard Model Context Protocol (MCP) JSON-RPC 2.0 endpoint.\n\nSupports official MCP methods: initialize, notifications/initialized, ping,\ntools/list, and tools/call."
+          },
+          "response": []
+        },
+        {
           "name": "List Mcp Tools",
           "request": {
             "method": "GET",

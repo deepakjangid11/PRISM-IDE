@@ -32,19 +32,25 @@ class LLMService:
     def __init__(
         self,
         provider: BaseLLMProvider | None = None,
+        fallback_provider: BaseLLMProvider | None = None,
         app_settings: Settings | None = None,
     ) -> None:
         self.settings = app_settings or global_settings
         self.provider = provider or LLMProviderFactory.create_provider(
             app_settings=self.settings
         )
+        self.fallback_provider = fallback_provider
 
     def set_provider(self, provider: BaseLLMProvider) -> None:
         """Switch active provider instance dynamically."""
         self.provider = provider
 
+    def set_fallback_provider(self, provider: BaseLLMProvider | None) -> None:
+        """Set or update secondary fallback provider."""
+        self.fallback_provider = provider
+
     async def complete(self, request: LLMRequest) -> LLMResponse:
-        """Execute a completion with exponential backoff retries for transient errors."""
+        """Execute a completion with exponential backoff retries for transient errors and graceful fallback."""
         correlation_id = request.correlation_id or f"llm_{uuid.uuid4().hex[:10]}"
         request_copy = request.model_copy(update={"correlation_id": correlation_id})
 
@@ -71,12 +77,32 @@ class LLMService:
                 )
                 if not is_transient or attempt > max_retries:
                     logger.error(
-                        "LLM completion permanently failed | attempt=%d/%d | correlation_id=%s | error=%s",
+                        "LLM completion permanently failed on primary provider '%s' | attempt=%d/%d | correlation_id=%s | error=%s",
+                        self.provider.provider_type.value,
                         attempt,
                         max_retries,
                         correlation_id,
                         e,
                     )
+                    # Attempt graceful fallback if configured
+                    if self.fallback_provider:
+                        logger.warning(
+                            "Attempting graceful fallback from '%s' to '%s' | correlation_id=%s",
+                            self.provider.provider_type.value,
+                            self.fallback_provider.provider_type.value,
+                            correlation_id,
+                        )
+                        try:
+                            fallback_resp = await self.fallback_provider.generate(
+                                request_copy
+                            )
+                            return fallback_resp
+                        except Exception as fb_err:  # noqa: BLE001
+                            logger.error(
+                                "Fallback provider '%s' also failed | error=%s",
+                                self.fallback_provider.provider_type.value,
+                                fb_err,
+                            )
                     raise
 
                 sleep_time = backoff_factor ** (attempt - 1)

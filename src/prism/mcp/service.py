@@ -249,6 +249,30 @@ class MCPService:
                     duration_ms=round(duration, 2),
                 )
 
+        # Enforce developer authorization / IDOR guards for developer-specific tools
+        if cleaned_tool in ("get_task_progress", "get_developer_report"):
+            target_dev_id = arguments.get("developer_id")
+            if (
+                target_dev_id
+                and caller_id
+                and caller_id != "admin"
+                and str(target_dev_id).strip() != str(caller_id).strip()
+            ):
+                duration = (time.perf_counter() - start) * 1000.0
+                self._log_audit(
+                    cleaned_tool,
+                    caller_id,
+                    arguments,
+                    "unauthorized",
+                    duration,
+                )
+                return ToolExecutionResult(
+                    tool_name=cleaned_tool,
+                    status="error",
+                    error=f"Unauthorized: Caller '{caller_id}' cannot access developer '{target_dev_id}' records.",
+                    duration_ms=round(duration, 2),
+                )
+
         try:
             if inspect.iscoroutinefunction(handler):
                 result = await handler(**arguments)
@@ -320,8 +344,11 @@ class MCPService:
         return task.model_dump()
 
     def _tool_read_project_file(self, file_path: str) -> dict[str, Any]:
-        """Safely read authorized source files, rejecting path traversal and sensitive files."""
+        """Safely read authorized source files, rejecting path traversal, absolute drives, and sensitive files."""
         clean_path = file_path.strip().replace("\\", "/")
+        if ":" in clean_path:
+            raise PermissionError("Access denied: Absolute volume paths are forbidden.")
+        clean_path = clean_path.lstrip("/")
         for blocked in BLOCKED_FILE_PATTERNS:
             if blocked in clean_path.lower():
                 raise PermissionError(

@@ -59,9 +59,16 @@ class RAGService:
         for chunk, emb in zip(chunks, embeddings, strict=True):
             chunk.embedding = emb
 
+        # Remove existing chunks for this file to support clean document updates
+        self.vector_store.delete_file(file_path)
+
         count = self.vector_store.add_chunks(chunks)
         logger.debug("Indexed file | path=%s | chunks=%d", file_path, count)
         return count
+
+    def delete_file(self, file_path: str) -> int:
+        """Remove a file and its chunks from the vector index."""
+        return self.vector_store.delete_file(file_path)
 
     async def index_project(self, project_path: str, max_files: int = 100) -> int:
         """Scan project directory and index supported code and documentation files."""

@@ -4,22 +4,60 @@ import hmac
 import json
 import uuid
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 from prism.config.settings import settings
 
+_REVOCATION_FILE = Path(".prism/revoked_tokens.json")
 _revoked_tokens: set[str] = set()
 
 
+def _load_revoked_tokens() -> set[str]:
+    """Load persisted revoked tokens from disk if present."""
+    if _REVOCATION_FILE.exists():
+        try:
+            content = _REVOCATION_FILE.read_text(encoding="utf-8").strip()
+            if content:
+                loaded = json.loads(content)
+                if isinstance(loaded, list):
+                    return set(loaded)
+        except OSError, json.JSONDecodeError, ValueError:
+            pass
+    return set()
+
+
+# Initialize in-memory cache with persisted revoked tokens
+_revoked_tokens.update(_load_revoked_tokens())
+
+
 def revoke_token(token_or_jti: str) -> None:
-    """Add a token or JTI identifier to the revocation set."""
+    """Add a token or JTI identifier to the revocation set and persist across restarts."""
     if token_or_jti:
-        _revoked_tokens.add(token_or_jti.strip())
+        cleaned = token_or_jti.strip()
+        _revoked_tokens.add(cleaned)
+        try:
+            _REVOCATION_FILE.parent.mkdir(parents=True, exist_ok=True)
+            _REVOCATION_FILE.write_text(
+                json.dumps(list(_revoked_tokens)),
+                encoding="utf-8",
+            )
+        except OSError, ValueError:
+            pass
 
 
 def is_token_revoked(token_or_jti: str) -> bool:
-    """Check if token or JTI identifier has been revoked."""
-    return bool(token_or_jti and token_or_jti.strip() in _revoked_tokens)
+    """Check if token or JTI identifier has been revoked (checking in-memory and disk)."""
+    if not token_or_jti:
+        return False
+    cleaned = token_or_jti.strip()
+    if cleaned in _revoked_tokens:
+        return True
+    # Synchronize from persistence file (multi-worker coordination)
+    persisted = _load_revoked_tokens()
+    if persisted:
+        _revoked_tokens.update(persisted)
+    return cleaned in _revoked_tokens
 
 
 def _base64url_encode(data: bytes) -> str:

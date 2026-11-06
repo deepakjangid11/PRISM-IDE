@@ -157,7 +157,11 @@
     "tags": [
       "Performance Analytics"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -172,7 +176,11 @@
     "tags": [
       "Performance Analytics"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -187,7 +195,11 @@
     "tags": [
       "Performance Analytics"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -202,7 +214,11 @@
     "tags": [
       "Performance Analytics"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -492,7 +508,11 @@
     "tags": [
       "Evaluation"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -507,7 +527,11 @@
     "tags": [
       "Evaluation"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -522,7 +546,11 @@
     "tags": [
       "Evaluation"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -537,7 +565,11 @@
     "tags": [
       "Evaluation"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -798,6 +830,24 @@
     ]
   },
   {
+    "method": "POST",
+    "path": "/mcp/rpc",
+    "operation_id": "handle_mcp_jsonrpc_mcp_rpc_post",
+    "summary": "Handle Mcp Jsonrpc",
+    "tags": [
+      "Model Context Protocol (MCP)"
+    ],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
     "method": "GET",
     "path": "/mcp/tools",
     "operation_id": "list_mcp_tools_mcp_tools_get",
@@ -819,7 +869,11 @@
     "tags": [
       "Model Context Protocol (MCP)"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -834,7 +888,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -849,7 +907,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -864,7 +926,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -879,7 +945,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -894,7 +964,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -909,7 +983,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -924,7 +1002,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -939,7 +1021,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -954,7 +1040,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -969,7 +1059,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -984,7 +1078,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -999,7 +1097,11 @@
     "tags": [
       "Mentoring"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1029,7 +1131,11 @@
     "tags": [
       "Developer Progress"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1044,7 +1150,11 @@
     "tags": [
       "Developer Progress"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1059,7 +1169,11 @@
     "tags": [
       "Developer Progress"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1074,7 +1188,11 @@
     "tags": [
       "Developer Progress"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1192,7 +1310,11 @@
     "tags": [
       "Progress Reports"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1207,7 +1329,11 @@
     "tags": [
       "Progress Reports"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1222,7 +1348,11 @@
     "tags": [
       "Progress Reports"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1312,7 +1442,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "201",
@@ -1327,7 +1461,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1342,7 +1480,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1357,7 +1499,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1402,7 +1548,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1417,7 +1567,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1447,7 +1601,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1462,7 +1620,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1477,7 +1639,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1492,7 +1658,11 @@
     "tags": [
       "Skills & Intelligence"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1522,7 +1692,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1537,7 +1711,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1552,7 +1730,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1567,7 +1749,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1582,7 +1768,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1597,7 +1787,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1612,7 +1806,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
@@ -1627,7 +1825,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": false,
     "responses": [
       "200",
@@ -1642,7 +1844,11 @@
     "tags": [
       "Personalized Tasks"
     ],
-    "security": [],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
     "has_request_body": true,
     "responses": [
       "200",
