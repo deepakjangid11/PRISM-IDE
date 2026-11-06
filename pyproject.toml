@@ -29,3 +29,11 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.14.4",
 ]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Security",
+    "fastapi.params.Depends",
+    "fastapi.params.Security",
+]

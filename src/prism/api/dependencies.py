@@ -1,4 +1,5 @@
 from prism.config.settings import settings
+from prism.evaluation.engine import TaskEvaluationEngine
 from prism.intelligence.activity_intelligence_service import (
     DeveloperActivityIntelligenceService,
 )
@@ -34,13 +35,16 @@ from prism.learning.recommendation_engine import LearningRecommendationEngine
 from prism.llm.context_builder import LLMContextBuilder
 from prism.llm.service import LLMService
 from prism.logging.logger import get_logger
+from prism.mcp.service import MCPService
 from prism.mentoring.adaptive_engine import AdaptiveMentoringEngine
 from prism.mentoring.context_builder import MentorContextBuilder
 from prism.mentoring.engine import MentoringEngine
+from prism.mentoring.guided_learning_service import GuidedLearningService
 from prism.mentoring.response_generator import DeterministicMentorGenerator
 from prism.rag.embeddings import DeterministicEmbeddingProvider
 from prism.rag.service import RAGService
 from prism.rag.vector_store import VectorStore
+from prism.reporting.report_generator import DeveloperReportGenerator
 from prism.storage.bootstrap import check_db_connection
 from prism.storage.database import get_session_factory
 from prism.storage.repositories.base import (
@@ -51,6 +55,7 @@ from prism.storage.repositories.base import (
     LearningRepository,
     SkillGraphRepository,
     SkillRepository,
+    TaskPlatformRepository,
 )
 from prism.storage.repositories.memory_repo import (
     InMemoryActivityRepository,
@@ -60,6 +65,7 @@ from prism.storage.repositories.memory_repo import (
     InMemorySessionRepository,
     InMemorySkillGraphRepository,
     InMemorySkillRepository,
+    InMemoryTaskPlatformRepository,
 )
 from prism.storage.repositories.mysql_activity_repo import (
     MySQLActivityRepository,
@@ -76,6 +82,9 @@ from prism.storage.repositories.mysql_learning_repo import (
 )
 from prism.storage.repositories.mysql_session_repo import MySQLSessionRepository
 from prism.storage.repositories.mysql_skill_repo import MySQLSkillRepository
+from prism.storage.repositories.mysql_task_platform_repo import (
+    MySQLTaskPlatformRepository,
+)
 
 logger = get_logger(__name__)
 
@@ -163,6 +172,38 @@ def init_intelligence_repository(
     )
 
 
+def init_task_platform_repository(
+    backend: str | None = None,
+    dev_repo: DeveloperRepository | None = None,
+) -> TaskPlatformRepository:
+    """Initialize task platform repository based on storage backend configuration."""
+    selected_backend = (backend or settings.storage_backend).strip().lower()
+
+    if selected_backend == "memory":
+        return InMemoryTaskPlatformRepository(
+            dev_repo=dev_repo
+            if isinstance(dev_repo, InMemoryDeveloperRepository)
+            else None
+        )
+
+    if selected_backend == "mysql":
+        if not check_db_connection():
+            error_msg = (
+                f"CRITICAL: Failed to connect to MySQL database at "
+                f"{settings.db_host}:{settings.db_port}/{settings.db_name} "
+                "for task platform repository."
+            )
+            logger.critical(error_msg)
+            raise RuntimeError(error_msg)
+
+        sf = get_session_factory()
+        return MySQLTaskPlatformRepository(sf, developer_repo=dev_repo)
+
+    raise ValueError(
+        f"Unsupported storage backend '{selected_backend}'. Expected 'mysql' or 'memory'."
+    )
+
+
 # Storage layer repository wiring
 (
     developer_repo,
@@ -174,6 +215,7 @@ def init_intelligence_repository(
 ) = init_storage_repositories()
 
 intelligence_repo = init_intelligence_repository()
+task_platform_repo = init_task_platform_repository(dev_repo=developer_repo)
 
 # Developer identity and session services
 identity_service = DeveloperIdentityService(developer_repo=developer_repo)
@@ -301,6 +343,39 @@ intelligence_orchestrator = CrossModuleIntelligenceOrchestrator(
     session_service=session_service,
 )
 
+# AI-Powered Developer Platform Engines (Task, Evaluation, Guided Learning, Reports, MCP)
+guided_learning_service = GuidedLearningService(
+    task_platform_repo=task_platform_repo,
+    task_engine=task_engine,
+    skill_tracker=skill_tracker,
+    gap_analyzer=gap_analyzer,
+    llm_service=llm_service,
+    rag_service=rag_service,
+)
+
+evaluation_engine = TaskEvaluationEngine(
+    task_platform_repo=task_platform_repo,
+    task_engine=task_engine,
+    skill_tracker=skill_tracker,
+    llm_service=llm_service,
+)
+
+report_generator = DeveloperReportGenerator(
+    task_platform_repo=task_platform_repo,
+    intelligence_repo=intelligence_repo,
+    skill_tracker=skill_tracker,
+    developer_repo=developer_repo,
+    activity_repo=activity_repo,
+)
+
+mcp_service = MCPService(
+    task_platform_repo=task_platform_repo,
+    task_engine=task_engine,
+    evaluation_engine=evaluation_engine,
+    report_generator=report_generator,
+    rag_service=rag_service,
+)
+
 
 def get_skill_tracker() -> SkillTracker:
     return skill_tracker
@@ -372,3 +447,23 @@ def get_llm_context_builder() -> LLMContextBuilder:
 
 def get_rag_service() -> RAGService:
     return rag_service
+
+
+def get_task_platform_repo() -> TaskPlatformRepository:
+    return task_platform_repo
+
+
+def get_guided_learning_service() -> GuidedLearningService:
+    return guided_learning_service
+
+
+def get_evaluation_engine() -> TaskEvaluationEngine:
+    return evaluation_engine
+
+
+def get_report_generator() -> DeveloperReportGenerator:
+    return report_generator
+
+
+def get_mcp_service() -> MCPService:
+    return mcp_service

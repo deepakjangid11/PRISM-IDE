@@ -239,6 +239,13 @@ class MySQLIntelligenceRepository:
                 prerequisite_skills_json=list(task.prerequisite_skills),
                 reason=task.reason,
                 acceptance_criteria_json=list(task.acceptance_criteria),
+                problem_statement=task.problem_statement,
+                learning_objectives_json=list(task.learning_objectives),
+                requirements_json=list(task.requirements),
+                test_cases_json=list(task.test_cases),
+                hints_json=list(task.hints),
+                expected_deliverables_json=list(task.expected_deliverables),
+                evaluation_criteria_json=list(task.evaluation_criteria),
                 created_at=task.created_at,
                 updated_at=task.updated_at,
             )
@@ -264,6 +271,25 @@ class MySQLIntelligenceRepository:
                 prerequisite_skills=_parse_json_list(record.prerequisite_skills_json),
                 reason=record.reason,
                 acceptance_criteria=_parse_json_list(record.acceptance_criteria_json),
+                problem_statement=record.problem_statement,
+                learning_objectives=_parse_json_list(record.learning_objectives_json)
+                if record.learning_objectives_json
+                else [],
+                requirements=_parse_json_list(record.requirements_json)
+                if record.requirements_json
+                else [],
+                test_cases=list(record.test_cases_json)
+                if record.test_cases_json
+                else [],
+                hints=_parse_json_list(record.hints_json) if record.hints_json else [],
+                expected_deliverables=_parse_json_list(
+                    record.expected_deliverables_json
+                )
+                if record.expected_deliverables_json
+                else [],
+                evaluation_criteria=_parse_json_list(record.evaluation_criteria_json)
+                if record.evaluation_criteria_json
+                else [],
                 created_at=_ensure_utc(record.created_at),
                 updated_at=_ensure_utc(record.updated_at),
             )
@@ -340,6 +366,25 @@ class MySQLIntelligenceRepository:
                 prerequisite_skills=_parse_json_list(record.prerequisite_skills_json),
                 reason=record.reason,
                 acceptance_criteria=_parse_json_list(record.acceptance_criteria_json),
+                problem_statement=record.problem_statement,
+                learning_objectives=_parse_json_list(record.learning_objectives_json)
+                if record.learning_objectives_json
+                else [],
+                requirements=_parse_json_list(record.requirements_json)
+                if record.requirements_json
+                else [],
+                test_cases=list(record.test_cases_json)
+                if record.test_cases_json
+                else [],
+                hints=_parse_json_list(record.hints_json) if record.hints_json else [],
+                expected_deliverables=_parse_json_list(
+                    record.expected_deliverables_json
+                )
+                if record.expected_deliverables_json
+                else [],
+                evaluation_criteria=_parse_json_list(record.evaluation_criteria_json)
+                if record.evaluation_criteria_json
+                else [],
                 created_at=_ensure_utc(record.created_at),
                 updated_at=_ensure_utc(record.updated_at),
             )

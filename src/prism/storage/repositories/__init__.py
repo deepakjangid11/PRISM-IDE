@@ -6,6 +6,7 @@ from prism.storage.repositories.base import (
     LearningRepository,
     SkillGraphRepository,
     SkillRepository,
+    TaskPlatformRepository,
 )
 from prism.storage.repositories.memory_repo import (
     InMemoryActivityRepository,
@@ -15,6 +16,7 @@ from prism.storage.repositories.memory_repo import (
     InMemorySessionRepository,
     InMemorySkillGraphRepository,
     InMemorySkillRepository,
+    InMemoryTaskPlatformRepository,
 )
 from prism.storage.repositories.mysql_activity_repo import (
     MySQLActivityRepository,
@@ -31,6 +33,9 @@ from prism.storage.repositories.mysql_learning_repo import (
 )
 from prism.storage.repositories.mysql_session_repo import MySQLSessionRepository
 from prism.storage.repositories.mysql_skill_repo import MySQLSkillRepository
+from prism.storage.repositories.mysql_task_platform_repo import (
+    MySQLTaskPlatformRepository,
+)
 
 __all__ = [
     "ActivityRepository",
@@ -43,6 +48,7 @@ __all__ = [
     "InMemorySessionRepository",
     "InMemorySkillGraphRepository",
     "InMemorySkillRepository",
+    "InMemoryTaskPlatformRepository",
     "IntelligenceRepository",
     "LearningRepository",
     "MySQLActivityRepository",
@@ -52,6 +58,8 @@ __all__ = [
     "MySQLSessionRepository",
     "MySQLSkillGraphRepository",
     "MySQLSkillRepository",
+    "MySQLTaskPlatformRepository",
     "SkillGraphRepository",
     "SkillRepository",
+    "TaskPlatformRepository",
 ]

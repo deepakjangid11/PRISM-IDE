@@ -1,0 +1,1652 @@
+[
+  {
+    "method": "GET",
+    "path": "/activity/analytics/{developer_id}",
+    "operation_id": "get_activity_analytics_activity_analytics__developer_id__get",
+    "summary": "Get Activity Analytics",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/activity/batch",
+    "operation_id": "batch_record_activities_activity_batch_post",
+    "summary": "Batch Record Activities",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/activity/history/{developer_id}",
+    "operation_id": "get_activity_history_activity_history__developer_id__get",
+    "summary": "Get Activity History",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/activity/languages/{developer_id}",
+    "operation_id": "get_language_distribution_activity_languages__developer_id__get",
+    "summary": "Get Language Distribution",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/activity/record",
+    "operation_id": "record_activity_activity_record_post",
+    "summary": "Record Activity",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/activity/session/{session_id}",
+    "operation_id": "get_session_activities_activity_session__session_id__get",
+    "summary": "Get Session Activities",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/activity/summary/{developer_id}",
+    "operation_id": "get_activity_summary_activity_summary__developer_id__get",
+    "summary": "Get Activity Summary",
+    "tags": [
+      "Activity Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/adaptation/adapt",
+    "operation_id": "adapt_learning_strategy_adaptation_adapt_post",
+    "summary": "Adapt Learning Strategy",
+    "tags": [
+      "Learning Adaptation"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/adaptation/history/{developer_id}",
+    "operation_id": "get_adaptation_history_adaptation_history__developer_id__get",
+    "summary": "Get Adaptation History",
+    "tags": [
+      "Learning Adaptation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/adaptation/strategy/{developer_id}",
+    "operation_id": "get_current_strategy_adaptation_strategy__developer_id__get",
+    "summary": "Get Current Strategy",
+    "tags": [
+      "Learning Adaptation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/history/{developer_id}",
+    "operation_id": "get_historical_snapshots_analytics_history__developer_id__get",
+    "summary": "Get Historical Snapshots",
+    "tags": [
+      "Performance Analytics"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/improvement/{developer_id}",
+    "operation_id": "get_skill_improvement_analytics_improvement__developer_id__get",
+    "summary": "Get Skill Improvement",
+    "tags": [
+      "Performance Analytics"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/learning/{developer_id}",
+    "operation_id": "get_learning_progress_analytics_learning__developer_id__get",
+    "summary": "Get Learning Progress",
+    "tags": [
+      "Performance Analytics"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/performance/{developer_id}",
+    "operation_id": "get_performance_overview_analytics_performance__developer_id__get",
+    "summary": "Get Performance Overview",
+    "tags": [
+      "Performance Analytics"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/auth/login",
+    "operation_id": "login_auth_login_post",
+    "summary": "Login",
+    "tags": [
+      "Authentication"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "operation_id": "logout_auth_logout_post",
+    "summary": "Logout",
+    "tags": [
+      "Authentication"
+    ],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/auth/me",
+    "operation_id": "get_current_profile_auth_me_get",
+    "summary": "Get Current Profile",
+    "tags": [
+      "Authentication"
+    ],
+    "security": [
+      {
+        "HTTPBearer": []
+      }
+    ],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/auth/refresh",
+    "operation_id": "refresh_token_auth_refresh_post",
+    "summary": "Refresh Token",
+    "tags": [
+      "Authentication"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/auth/register",
+    "operation_id": "register_auth_register_post",
+    "summary": "Register",
+    "tags": [
+      "Authentication"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/behavior",
+    "operation_id": "analyze_behavior_developer_behavior_post",
+    "summary": "Analyze Behavior",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/identify",
+    "operation_id": "identify_developer_developer_identify_post",
+    "summary": "Identify Developer",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/register",
+    "operation_id": "register_developer_developer_register_post",
+    "summary": "Register Developer",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/developer/session/active/{developer_id}",
+    "operation_id": "get_active_session_developer_session_active__developer_id__get",
+    "summary": "Get Active Session",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/session/end",
+    "operation_id": "end_session_developer_session_end_post",
+    "summary": "End Session",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/session/heartbeat",
+    "operation_id": "session_heartbeat_developer_session_heartbeat_post",
+    "summary": "Session Heartbeat",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/developer/session/history/{developer_id}",
+    "operation_id": "get_session_history_developer_session_history__developer_id__get",
+    "summary": "Get Session History",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/session/start",
+    "operation_id": "start_session_developer_session_start_post",
+    "summary": "Start Session",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/developer/skills/graph",
+    "operation_id": "get_skill_graph_developer_skills_graph_get",
+    "summary": "Get Skill Graph",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/developer/skills/record",
+    "operation_id": "record_skill_evidence_developer_skills_record_post",
+    "summary": "Record Skill Evidence",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/developer/skills/{developer_id}",
+    "operation_id": "get_developer_skill_profile_developer_skills__developer_id__get",
+    "summary": "Get Developer Skill Profile",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/developer/{developer_id}/profile",
+    "operation_id": "get_developer_profile_developer__developer_id__profile_get",
+    "summary": "Get Developer Profile",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "PUT",
+    "path": "/developer/{developer_id}/profile",
+    "operation_id": "update_developer_profile_developer__developer_id__profile_put",
+    "summary": "Update Developer Profile",
+    "tags": [
+      "Developer"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/evaluation/developer/{developer_id}",
+    "operation_id": "get_developer_evaluations_evaluation_developer__developer_id__get",
+    "summary": "Get Developer Evaluations",
+    "tags": [
+      "Evaluation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/evaluation/submissions/{submission_id}",
+    "operation_id": "evaluate_submission_evaluation_submissions__submission_id__post",
+    "summary": "Evaluate Submission",
+    "tags": [
+      "Evaluation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/evaluation/submissions/{submission_id}/result",
+    "operation_id": "get_evaluation_by_submission_evaluation_submissions__submission_id__result_get",
+    "summary": "Get Evaluation By Submission",
+    "tags": [
+      "Evaluation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/evaluation/{evaluation_id}",
+    "operation_id": "get_evaluation_evaluation__evaluation_id__get",
+    "summary": "Get Evaluation",
+    "tags": [
+      "Evaluation"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/feedback/generate",
+    "operation_id": "trigger_feedback_generation_feedback_generate_post",
+    "summary": "Trigger Feedback Generation",
+    "tags": [
+      "Intelligent Feedback"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/feedback/history/{developer_id}",
+    "operation_id": "get_feedback_history_feedback_history__developer_id__get",
+    "summary": "Get Feedback History",
+    "tags": [
+      "Intelligent Feedback"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/feedback/{developer_id}",
+    "operation_id": "get_proactive_feedback_feedback__developer_id__get",
+    "summary": "Get Proactive Feedback",
+    "tags": [
+      "Intelligent Feedback"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "operation_id": "health_check_health_get",
+    "summary": "Health Check",
+    "tags": [
+      "Health"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/intelligence/insights/{developer_id}",
+    "operation_id": "get_developer_insights_intelligence_insights__developer_id__get",
+    "summary": "Get Developer Insights",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/intelligence/orchestrate/activity",
+    "operation_id": "orchestrate_activity_intelligence_orchestrate_activity_post",
+    "summary": "Orchestrate Activity",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/intelligence/orchestrate/sync",
+    "operation_id": "orchestrate_sync_intelligence_orchestrate_sync_post",
+    "summary": "Orchestrate Sync",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/intelligence/profile/{developer_id}",
+    "operation_id": "get_developer_profile_intelligence_profile__developer_id__get",
+    "summary": "Get Developer Profile",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/intelligence/refresh",
+    "operation_id": "refresh_developer_intelligence_intelligence_refresh_post",
+    "summary": "Refresh Developer Intelligence",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/intelligence/trends/{developer_id}",
+    "operation_id": "get_skill_trends_intelligence_trends__developer_id__get",
+    "summary": "Get Skill Trends",
+    "tags": [
+      "Developer Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/learning/gaps",
+    "operation_id": "identify_knowledge_gaps_learning_gaps_post",
+    "summary": "Identify Knowledge Gaps",
+    "tags": [
+      "Learning"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/learning/paths",
+    "operation_id": "generate_learning_path_learning_paths_post",
+    "summary": "Generate Learning Path",
+    "tags": [
+      "Learning"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/learning/recommendations",
+    "operation_id": "get_learning_recommendations_learning_recommendations_post",
+    "summary": "Get Learning Recommendations",
+    "tags": [
+      "Learning"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/llm/complete",
+    "operation_id": "complete_chat_llm_complete_post",
+    "summary": "Complete Chat",
+    "tags": [
+      "LLM Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/llm/complete/stream",
+    "operation_id": "complete_chat_stream_llm_complete_stream_post",
+    "summary": "Complete Chat Stream",
+    "tags": [
+      "LLM Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/llm/health",
+    "operation_id": "check_llm_health_llm_health_get",
+    "summary": "Check Llm Health",
+    "tags": [
+      "LLM Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mcp/audit",
+    "operation_id": "get_mcp_audit_logs_mcp_audit_get",
+    "summary": "Get Mcp Audit Logs",
+    "tags": [
+      "Model Context Protocol (MCP)"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mcp/tools",
+    "operation_id": "list_mcp_tools_mcp_tools_get",
+    "summary": "List Mcp Tools",
+    "tags": [
+      "Model Context Protocol (MCP)"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mcp/tools/execute",
+    "operation_id": "execute_mcp_tool_mcp_tools_execute_post",
+    "summary": "Execute Mcp Tool",
+    "tags": [
+      "Model Context Protocol (MCP)"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/adaptive",
+    "operation_id": "request_adaptive_mentoring_mentoring_adaptive_post",
+    "summary": "Request Adaptive Mentoring",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/adaptive/stream",
+    "operation_id": "stream_adaptive_mentoring_mentoring_adaptive_stream_post",
+    "summary": "Stream Adaptive Mentoring",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mentoring/conversations/developer/{developer_id}",
+    "operation_id": "list_developer_conversations_mentoring_conversations_developer__developer_id__get",
+    "summary": "List Developer Conversations",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/conversations/start",
+    "operation_id": "start_mentoring_conversation_mentoring_conversations_start_post",
+    "summary": "Start Mentoring Conversation",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mentoring/conversations/{conversation_id}",
+    "operation_id": "get_mentoring_conversation_mentoring_conversations__conversation_id__get",
+    "summary": "Get Mentoring Conversation",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/conversations/{conversation_id}/debug",
+    "operation_id": "request_debug_guidance_mentoring_conversations__conversation_id__debug_post",
+    "summary": "Request Debug Guidance",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/conversations/{conversation_id}/hint",
+    "operation_id": "request_progressive_hint_mentoring_conversations__conversation_id__hint_post",
+    "summary": "Request Progressive Hint",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mentoring/conversations/{conversation_id}/history",
+    "operation_id": "get_conversation_history_mentoring_conversations__conversation_id__history_get",
+    "summary": "Get Conversation History",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/conversations/{conversation_id}/message",
+    "operation_id": "send_conversation_message_mentoring_conversations__conversation_id__message_post",
+    "summary": "Send Conversation Message",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/conversations/{conversation_id}/step-by-step",
+    "operation_id": "request_step_by_step_milestones_mentoring_conversations__conversation_id__step_by_step_post",
+    "summary": "Request Step By Step Milestones",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mentoring/effectiveness/{developer_id}",
+    "operation_id": "get_mentoring_effectiveness_mentoring_effectiveness__developer_id__get",
+    "summary": "Get Mentoring Effectiveness",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/mentoring/history/{developer_id}",
+    "operation_id": "get_mentoring_history_mentoring_history__developer_id__get",
+    "summary": "Get Mentoring History",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/mentoring/request",
+    "operation_id": "request_mentoring_mentoring_request_post",
+    "summary": "Request Mentoring",
+    "tags": [
+      "Mentoring"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/progress/{developer_id}/dashboard",
+    "operation_id": "get_dashboard_metrics_progress__developer_id__dashboard_get",
+    "summary": "Get Dashboard Metrics",
+    "tags": [
+      "Developer Progress"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/progress/{developer_id}/history",
+    "operation_id": "get_performance_history_progress__developer_id__history_get",
+    "summary": "Get Performance History",
+    "tags": [
+      "Developer Progress"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/progress/{developer_id}/learning-paths",
+    "operation_id": "get_learning_path_progress_progress__developer_id__learning_paths_get",
+    "summary": "Get Learning Path Progress",
+    "tags": [
+      "Developer Progress"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/progress/{developer_id}/skills",
+    "operation_id": "get_skills_progress_progress__developer_id__skills_get",
+    "summary": "Get Skills Progress",
+    "tags": [
+      "Developer Progress"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/projects/analyze",
+    "operation_id": "analyze_project_projects_analyze_post",
+    "summary": "Analyze Project",
+    "tags": [
+      "Projects"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/projects/intelligence",
+    "operation_id": "analyze_project_intelligence_projects_intelligence_post",
+    "summary": "Analyze Project Intelligence",
+    "tags": [
+      "Projects"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/rag/clear",
+    "operation_id": "clear_rag_rag_clear_post",
+    "summary": "Clear Rag",
+    "tags": [
+      "RAG Code Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/rag/index/file",
+    "operation_id": "index_file_rag_index_file_post",
+    "summary": "Index File",
+    "tags": [
+      "RAG Code Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/rag/index/project",
+    "operation_id": "index_project_rag_index_project_post",
+    "summary": "Index Project",
+    "tags": [
+      "RAG Code Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/rag/search",
+    "operation_id": "search_rag_rag_search_post",
+    "summary": "Search Rag",
+    "tags": [
+      "RAG Code Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/rag/stats",
+    "operation_id": "rag_stats_rag_stats_get",
+    "summary": "Rag Stats",
+    "tags": [
+      "RAG Code Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/reports/developer/{developer_id}",
+    "operation_id": "list_developer_reports_reports_developer__developer_id__get",
+    "summary": "List Developer Reports",
+    "tags": [
+      "Progress Reports"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/reports/generate",
+    "operation_id": "generate_progress_report_reports_generate_post",
+    "summary": "Generate Progress Report",
+    "tags": [
+      "Progress Reports"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/reports/{report_id}",
+    "operation_id": "get_report_reports__report_id__get",
+    "summary": "Get Report",
+    "tags": [
+      "Progress Reports"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/session/active/{developer_id}",
+    "operation_id": "get_active_session_session_active__developer_id__get",
+    "summary": "Get Active Session",
+    "tags": [
+      "Session"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/session/end",
+    "operation_id": "end_session_session_end_post",
+    "summary": "End Session",
+    "tags": [
+      "Session"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/session/heartbeat",
+    "operation_id": "session_heartbeat_session_heartbeat_post",
+    "summary": "Session Heartbeat",
+    "tags": [
+      "Session"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/session/history/{developer_id}",
+    "operation_id": "get_session_history_session_history__developer_id__get",
+    "summary": "Get Session History",
+    "tags": [
+      "Session"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/session/start",
+    "operation_id": "start_session_session_start_post",
+    "summary": "Start Session",
+    "tags": [
+      "Session"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/skills/evidence",
+    "operation_id": "record_skill_evidence_skills_evidence_post",
+    "summary": "Record Skill Evidence",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "201",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/evidence/{developer_id}",
+    "operation_id": "get_developer_evidence_skills_evidence__developer_id__get",
+    "summary": "Get Developer Evidence",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/skills/gap-analysis",
+    "operation_id": "perform_gap_analysis_skills_gap_analysis_post",
+    "summary": "Perform Gap Analysis",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/gaps/{developer_id}",
+    "operation_id": "get_developer_gaps_skills_gaps__developer_id__get",
+    "summary": "Get Developer Gaps",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/graph",
+    "operation_id": "get_skill_graph_snapshot_skills_graph_get",
+    "summary": "Get Skill Graph Snapshot",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/graph/{skill_id}",
+    "operation_id": "get_skill_node_skills_graph__skill_id__get",
+    "summary": "Get Skill Node",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/skills/learning-path",
+    "operation_id": "create_learning_path_skills_learning_path_post",
+    "summary": "Create Learning Path",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/learning-path/{developer_id}",
+    "operation_id": "get_developer_learning_path_skills_learning_path__developer_id__get",
+    "summary": "Get Developer Learning Path",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/prerequisites/{skill_id}",
+    "operation_id": "get_skill_prerequisites_skills_prerequisites__skill_id__get",
+    "summary": "Get Skill Prerequisites",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/proficiency/{developer_id}",
+    "operation_id": "get_developer_proficiencies_skills_proficiency__developer_id__get",
+    "summary": "Get Developer Proficiencies",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/proficiency/{developer_id}/{skill_id}",
+    "operation_id": "get_single_skill_proficiency_skills_proficiency__developer_id___skill_id__get",
+    "summary": "Get Single Skill Proficiency",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/profile/{developer_id}",
+    "operation_id": "get_developer_skill_profile_skills_profile__developer_id__get",
+    "summary": "Get Developer Skill Profile",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/recommendations/{developer_id}",
+    "operation_id": "get_developer_recommendations_skills_recommendations__developer_id__get",
+    "summary": "Get Developer Recommendations",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/skills/related/{skill_id}",
+    "operation_id": "get_related_skills_skills_related__skill_id__get",
+    "summary": "Get Related Skills",
+    "tags": [
+      "Skills & Intelligence"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tasks/developer/{developer_id}",
+    "operation_id": "list_developer_tasks_tasks_developer__developer_id__get",
+    "summary": "List Developer Tasks",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tasks/generate",
+    "operation_id": "generate_tasks_tasks_generate_post",
+    "summary": "Generate Tasks",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tasks/recommendations/{developer_id}",
+    "operation_id": "get_task_recommendations_tasks_recommendations__developer_id__get",
+    "summary": "Get Task Recommendations",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tasks/{task_id}",
+    "operation_id": "get_task_tasks__task_id__get",
+    "summary": "Get Task",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tasks/{task_id}/assign",
+    "operation_id": "assign_task_tasks__task_id__assign_post",
+    "summary": "Assign Task",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tasks/{task_id}/evaluate",
+    "operation_id": "evaluate_task_tasks__task_id__evaluate_post",
+    "summary": "Evaluate Task",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/tasks/{task_id}/status",
+    "operation_id": "update_task_status_tasks__task_id__status_patch",
+    "summary": "Update Task Status",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tasks/{task_id}/submissions",
+    "operation_id": "get_task_submissions_tasks__task_id__submissions_get",
+    "summary": "Get Task Submissions",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": false,
+    "responses": [
+      "200",
+      "422"
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tasks/{task_id}/submit",
+    "operation_id": "submit_task_tasks__task_id__submit_post",
+    "summary": "Submit Task",
+    "tags": [
+      "Personalized Tasks"
+    ],
+    "security": [],
+    "has_request_body": true,
+    "responses": [
+      "200",
+      "422"
+    ]
+  }
+]

@@ -1,0 +1,4122 @@
+{
+  "info": {
+    "_postman_id": "prism-ide-api-collection-2026",
+    "name": "PRISM IDE \u2014 Developer Intelligence & Learning Platform API",
+    "description": "Complete production API suite for PRISM (Personalized Real-time Intelligent Skill Mentor). Includes Auth, Activity Intelligence, Skill Tracking, Tasks, Progressive Mentoring Dialogues, AST Evaluation, RAG Code Search, MCP Tools, Progress Analytics, and Reports.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Activity Intelligence",
+      "item": [
+        {
+          "name": "Get Activity Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/analytics/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "analytics",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "project_path",
+                  "value": "",
+                  "description": "Optional project filter",
+                  "disabled": true
+                },
+                {
+                  "key": "time_window",
+                  "value": "all",
+                  "description": "Time window ('all', 'today', '7d', '30d')",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve rich multidimensional activity analytics for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Record Activities",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/batch",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "batch"
+              ],
+              "query": []
+            },
+            "description": "Ingest a batch of developer activities with high throughput.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activities\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Activity History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "project_path",
+                  "value": "",
+                  "description": "Optional project path filter",
+                  "disabled": true
+                },
+                {
+                  "key": "session_id",
+                  "value": "",
+                  "description": "Optional session filter",
+                  "disabled": true
+                },
+                {
+                  "key": "language",
+                  "value": "",
+                  "description": "Optional language filter",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Optional category filter",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Page limit",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Page offset",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve filtered, paginated activity events for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Language Distribution",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/languages/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "languages",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "project_path",
+                  "value": "",
+                  "description": "Optional project filter",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve programming language activity distribution."
+          },
+          "response": []
+        },
+        {
+          "name": "Record Activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "record"
+              ],
+              "query": []
+            },
+            "description": "Ingest, classify, associate session, and persist a developer activity.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"sample_event_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"event_type\": \"sample_event_type\",\n  \"project_path\": \"sample_project_path\",\n  \"file_path\": \"sample_file_path\",\n  \"session_id\": \"sample_session_id\",\n  \"code_snippet\": \"sample_code_snippet\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session Activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/session/{session_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "session",
+                ":session_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve all activities recorded in a specific working session."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Activity Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activity/summary/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "activity",
+                "summary",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "project_path",
+                  "value": "",
+                  "description": "Optional project filter",
+                  "disabled": true
+                },
+                {
+                  "key": "time_window",
+                  "value": "all",
+                  "description": "Time window ('all', 'today', '7d', '30d')",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve summarized activity counts and metrics for a developer."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ],
+              "query": []
+            },
+            "description": "Authenticate with email and password to receive JWT tokens.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_email\",\n  \"password\": \"sample_password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ],
+              "query": []
+            },
+            "description": "Logout current user session and revoke token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ],
+              "query": []
+            },
+            "description": "Retrieve profile and authentication status of the currently authenticated developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ],
+              "query": []
+            },
+            "description": "Exchange a valid refresh token for a new access token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"sample_refresh_token\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ],
+              "query": []
+            },
+            "description": "Register a new developer account and return initial JWT tokens.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sample_email\",\n  \"password\": \"sample_password\",\n  \"name\": \"sample_name\",\n  \"developer_id\": \"sample_developer_id\",\n  \"role\": \"developer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Developer",
+      "item": [
+        {
+          "name": "Analyze Behavior",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/behavior",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "behavior"
+              ],
+              "query": []
+            },
+            "description": "Analyze developer activities and session data to generate behavioral insights.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activities\": [],\n  \"developer_id\": \"sample_developer_id\",\n  \"project_path\": \"sample_project_path\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Identify Developer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/identify",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "identify"
+              ],
+              "query": []
+            },
+            "description": "Resolve an existing developer using developer_id or email.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"email\": \"sample_email\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Developer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "register"
+              ],
+              "query": []
+            },
+            "description": "Register a new developer identity.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_name\",\n  \"email\": \"sample_email\",\n  \"developer_id\": \"sample_developer_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/session/active/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "session",
+                "active",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve the current active working session for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "End Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/session/end",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "session",
+                "end"
+              ],
+              "query": []
+            },
+            "description": "Conclude an active developer working session.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"sample_session_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Session Heartbeat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/session/heartbeat",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "session",
+                "heartbeat"
+              ],
+              "query": []
+            },
+            "description": "Touch working session heartbeat and update activity timestamp.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"sample_session_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/session/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "session",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch paginated working session history for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/session/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "session",
+                "start"
+              ],
+              "query": []
+            },
+            "description": "Initiate a new developer working session, closing any active session.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"project_path\": \"sample_project_path\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Graph",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/skills/graph",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "skills",
+                "graph"
+              ],
+              "query": []
+            },
+            "description": "Retrieve serializable snapshot of the technical skill graph."
+          },
+          "response": []
+        },
+        {
+          "name": "Record Skill Evidence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/skills/record",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "skills",
+                "record"
+              ],
+              "query": []
+            },
+            "description": "Record concrete evidence for a developer's technical skill.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"evidence_id\": \"sample_evidence_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"skill_name\": \"sample_skill_name\",\n  \"skill_id\": \"sample_skill_id\",\n  \"project_path\": \"sample_project_path\",\n  \"programming_language\": \"sample_programming_language\",\n  \"framework\": \"sample_framework\",\n  \"evidence_source\": \"code_artifact\",\n  \"evidence_type\": \"implementation\",\n  \"description\": \"sample_description\",\n  \"evidence_strength\": 1.0,\n  \"confidence_score\": 0.85,\n  \"complexity_score\": 0.5,\n  \"timestamp\": \"sample_timestamp\",\n  \"related_activity_id\": \"sample_related_activity_id\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Skill Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/skills/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                "skills",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve skill profile for a specific developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/{developer_id}/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                ":developer_id",
+                "profile"
+              ],
+              "query": []
+            },
+            "description": "Retrieve developer profile attributes by ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Developer Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/developer/{developer_id}/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "developer",
+                ":developer_id",
+                "profile"
+              ],
+              "query": []
+            },
+            "description": "Update permitted developer profile fields.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"sample_name\",\n  \"email\": \"sample_email\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Developer Intelligence",
+      "item": [
+        {
+          "name": "Get Developer Insights",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/insights/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "insights",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve high-confidence insights generated for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Orchestrate Activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/orchestrate/activity",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "orchestrate",
+                "activity"
+              ],
+              "query": [
+                {
+                  "key": "auto_generate_tasks",
+                  "value": "False",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Ingest activity and execute end-to-end multi-module recalibration.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"sample_event_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"event_type\": \"sample_event_type\",\n  \"timestamp\": \"sample_timestamp\",\n  \"project_path\": \"sample_project_path\",\n  \"file_path\": \"sample_file_path\",\n  \"session_id\": \"sample_session_id\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Orchestrate Sync",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/orchestrate/sync",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "orchestrate",
+                "sync"
+              ],
+              "query": []
+            },
+            "description": "Execute complete multi-module synchronization across all subsystems.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_role\": \"sample_target_role\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/profile/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "profile",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve comprehensive developer intelligence profile."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Developer Intelligence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "refresh"
+              ],
+              "query": []
+            },
+            "description": "Trigger an on-demand intelligence analysis and snapshot creation.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Trends",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/intelligence/trends/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "intelligence",
+                "trends",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve skill progression trajectories and velocity trends."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Developer Progress",
+      "item": [
+        {
+          "name": "Get Dashboard Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/{developer_id}/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ":developer_id",
+                "dashboard"
+              ],
+              "query": []
+            },
+            "description": "Retrieve high-level real-time dashboard progress metrics for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Performance History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/{developer_id}/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ":developer_id",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "30",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical performance snapshots for progress trend comparison."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Learning Path Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/{developer_id}/learning-paths",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ":developer_id",
+                "learning-paths"
+              ],
+              "query": [
+                {
+                  "key": "target_goal",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve learning progress history and target roadmap milestones."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skills Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/{developer_id}/skills",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                ":developer_id",
+                "skills"
+              ],
+              "query": []
+            },
+            "description": "Retrieve detailed skill proficiency breakdown and evidence counts."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "item": [
+        {
+          "name": "Get Developer Evaluations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/evaluation/developer/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "evaluation",
+                "developer",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve evaluation history for a developer in reverse chronological order."
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluate Submission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/evaluation/submissions/{submission_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "evaluation",
+                "submissions",
+                ":submission_id"
+              ],
+              "query": []
+            },
+            "description": "Evaluate a task submission using static AST analysis and acceptance criteria verification."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Evaluation By Submission",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/evaluation/submissions/{submission_id}/result",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "evaluation",
+                "submissions",
+                ":submission_id",
+                "result"
+              ],
+              "query": []
+            },
+            "description": "Retrieve evaluation result associated with a specific task submission."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Evaluation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/evaluation/{evaluation_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "evaluation",
+                ":evaluation_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve structured evaluation result by evaluation ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ],
+              "query": []
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Intelligent Feedback",
+      "item": [
+        {
+          "name": "Trigger Feedback Generation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/feedback/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "feedback",
+                "generate"
+              ],
+              "query": []
+            },
+            "description": "Explicitly trigger proactive coaching feedback for a developer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Feedback History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/feedback/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "feedback",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical coaching and evaluation feedback delivered to a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Proactive Feedback",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/feedback/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "feedback",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Generate and return proactive diagnostic and coaching feedback."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "LLM Intelligence",
+      "item": [
+        {
+          "name": "Complete Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/llm/complete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "llm",
+                "complete"
+              ],
+              "query": []
+            },
+            "description": "Generate a chat completion using the configured LLM provider.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [],\n  \"temperature\": 0.2,\n  \"max_tokens\": 2048,\n  \"model\": \"sample_model\",\n  \"stream\": false,\n  \"response_format\": \"sample_response_format\",\n  \"correlation_id\": \"sample_correlation_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Chat Stream",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/llm/complete/stream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "llm",
+                "complete",
+                "stream"
+              ],
+              "query": []
+            },
+            "description": "Stream a chat completion using Server-Sent Events (SSE).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [],\n  \"temperature\": 0.2,\n  \"max_tokens\": 2048,\n  \"model\": \"sample_model\",\n  \"stream\": false,\n  \"response_format\": \"sample_response_format\",\n  \"correlation_id\": \"sample_correlation_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Llm Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/llm/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "llm",
+                "health"
+              ],
+              "query": []
+            },
+            "description": "Check connectivity and health of the active LLM provider."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Learning",
+      "item": [
+        {
+          "name": "Identify Knowledge Gaps",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/learning/gaps",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "learning",
+                "gaps"
+              ],
+              "query": []
+            },
+            "description": "Identify missing prerequisites and skills with insufficient evidence.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_skill\": \"sample_target_skill\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Learning Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/learning/paths",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "learning",
+                "paths"
+              ],
+              "query": []
+            },
+            "description": "Generate an ordered, prerequisite-respecting learning path.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_goal\": \"sample_target_goal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Learning Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/learning/recommendations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "learning",
+                "recommendations"
+              ],
+              "query": []
+            },
+            "description": "Generate prioritized, deduplicated learning recommendations.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_skill\": \"sample_target_skill\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Learning Adaptation",
+      "item": [
+        {
+          "name": "Adapt Learning Strategy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/adaptation/adapt",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "adaptation",
+                "adapt"
+              ],
+              "query": []
+            },
+            "description": "Evaluate performance patterns and adapt learning strategy dynamically.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Adaptation History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/adaptation/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "adaptation",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical adaptation records for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Strategy",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/adaptation/strategy/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "adaptation",
+                "strategy",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve the currently active learning adaptation strategy."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Mentoring",
+      "item": [
+        {
+          "name": "Request Adaptive Mentoring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/adaptive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "adaptive"
+              ],
+              "query": []
+            },
+            "description": "Submit an adaptive mentoring query with level and strategy personalization.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"query\": \"sample_query\",\n  \"project_path\": \"sample_project_path\",\n  \"target_skill\": \"sample_target_skill\",\n  \"preferred_strategy\": \"sample_preferred_strategy\",\n  \"context_metadata\": {},\n  \"use_llm\": true,\n  \"enable_rag\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stream Adaptive Mentoring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/adaptive/stream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "adaptive",
+                "stream"
+              ],
+              "query": []
+            },
+            "description": "Stream an adaptive mentoring response via Server-Sent Events (SSE).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"query\": \"sample_query\",\n  \"project_path\": \"sample_project_path\",\n  \"target_skill\": \"sample_target_skill\",\n  \"preferred_strategy\": \"sample_preferred_strategy\",\n  \"context_metadata\": {},\n  \"use_llm\": true,\n  \"enable_rag\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Developer Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/developer/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                "developer",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "task_id",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "List interactive mentoring conversations for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Mentoring Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                "start"
+              ],
+              "query": []
+            },
+            "description": "Start a task-linked interactive mentoring dialogue with progressive guidance.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"task_id\": \"sample_task_id\",\n  \"initial_query\": \"sample_initial_query\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Mentoring Conversation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve mentoring conversation details."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Debug Guidance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}/debug",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id",
+                "debug"
+              ],
+              "query": []
+            },
+            "description": "Diagnose execution failure and guide developer through error understanding (Level 6).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"error_output\": \"sample_error_output\",\n  \"code_snippet\": \"sample_code_snippet\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request Progressive Hint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}/hint",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id",
+                "hint"
+              ],
+              "query": []
+            },
+            "description": "Request a progressive hint (Level 3) without code spoilers."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Conversation History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve complete message history for an interactive mentoring dialogue."
+          },
+          "response": []
+        },
+        {
+          "name": "Send Conversation Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}/message",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id",
+                "message"
+              ],
+              "query": []
+            },
+            "description": "Send developer query and receive tailored mentoring response matching requested guidance level.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"sample_message\",\n  \"requested_level\": \"sample_requested_level\",\n  \"allow_solution\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request Step By Step Milestones",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/conversations/{conversation_id}/step-by-step",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "conversations",
+                ":conversation_id",
+                "step-by-step"
+              ],
+              "query": []
+            },
+            "description": "Request task decomposition into smaller actionable steps (Level 4)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Mentoring Effectiveness",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/effectiveness/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "effectiveness",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve mentoring effectiveness score and strategy breakdown."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Mentoring History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical adaptive mentoring sessions for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Request Mentoring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mentoring/request",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mentoring",
+                "request"
+              ],
+              "query": []
+            },
+            "description": "Submit a mentoring query in Build Mode or Learn Mode.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"mode\": \"sample_mode\",\n  \"query\": \"sample_query\",\n  \"project_path\": \"sample_project_path\",\n  \"target_skill\": \"sample_target_skill\",\n  \"context_metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Model Context Protocol (MCP)",
+      "item": [
+        {
+          "name": "Get Mcp Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mcp/audit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mcp",
+                "audit"
+              ],
+              "query": [
+                {
+                  "key": "caller_id",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve audit logs of executed MCP tools."
+          },
+          "response": []
+        },
+        {
+          "name": "List Mcp Tools",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mcp/tools",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mcp",
+                "tools"
+              ],
+              "query": []
+            },
+            "description": "List all registered, authorized Model Context Protocol tools and schemas."
+          },
+          "response": []
+        },
+        {
+          "name": "Execute Mcp Tool",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mcp/tools/execute",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mcp",
+                "tools",
+                "execute"
+              ],
+              "query": []
+            },
+            "description": "Execute an authorized MCP tool with permission checks, timing, and audit logging.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tool_name\": \"sample_tool_name\",\n  \"arguments\": {},\n  \"caller_id\": \"sample_caller_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Performance Analytics",
+      "item": [
+        {
+          "name": "Get Historical Snapshots",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical performance snapshots for longitudinal analysis."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Improvement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/improvement/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "improvement",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve skill improvement rates and growth metrics."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Learning Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/learning/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "learning",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve learning trajectory and consistency metrics."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Performance Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/analytics/performance/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analytics",
+                "performance",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve comprehensive developer performance snapshot and role readiness."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Personalized Tasks",
+      "item": [
+        {
+          "name": "List Developer Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/developer/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                "developer",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "List all personalized tasks for a developer with optional status filtering."
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Tasks",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                "generate"
+              ],
+              "query": []
+            },
+            "description": "Generate targeted, gap-closing personalized tasks for a developer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_role\": \"sample_target_role\",\n  \"target_goal\": \"sample_target_goal\",\n  \"difficulty_preference\": \"sample_difficulty_preference\",\n  \"limit\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/recommendations/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                "recommendations",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "target_role",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "5",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve prioritized task recommendations with readiness assessments."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve an individual personalized task by ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id",
+                "assign"
+              ],
+              "query": []
+            },
+            "description": "Accept and assign a personalized task to the developer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evaluate Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}/evaluate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id",
+                "evaluate"
+              ],
+              "query": []
+            },
+            "description": "Evaluate task completion, record outcome, and generate verifiable skill evidence.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"passed\": true,\n  \"score\": 1.0,\n  \"execution_notes\": \"\",\n  \"verified_artifacts\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id",
+                "status"
+              ],
+              "query": []
+            },
+            "description": "Update progress status and notes for a task.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sample_status\",\n  \"notes\": \"sample_notes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}/submissions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id",
+                "submissions"
+              ],
+              "query": []
+            },
+            "description": "Retrieve all submissions for a given task."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tasks/{task_id}/submit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tasks",
+                ":task_id",
+                "submit"
+              ],
+              "query": []
+            },
+            "description": "Submit code, file tree, repository reference, or explanation for an assigned task.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"submission_type\": \"code\",\n  \"source_code\": \"sample_source_code\",\n  \"file_tree\": {},\n  \"repo_url\": \"sample_repo_url\",\n  \"explanation\": \"sample_explanation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Progress Reports",
+      "item": [
+        {
+          "name": "List Developer Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/developer/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "developer",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve historical progress reports for a developer in reverse chronological order."
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Progress Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                "generate"
+              ],
+              "query": []
+            },
+            "description": "Generate, compute, and persist a comprehensive progress report based on real database records.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"period_type\": \"weekly\",\n  \"start_date\": \"sample_start_date\",\n  \"end_date\": \"sample_end_date\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/{report_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reports",
+                ":report_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve an existing progress report by report ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "Analyze Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/projects/analyze",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "projects",
+                "analyze"
+              ],
+              "query": []
+            },
+            "description": "Analyze project structure and Python code.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"project_path\": \"sample_project_path\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Project Intelligence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/projects/intelligence",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "projects",
+                "intelligence"
+              ],
+              "query": []
+            },
+            "description": "Generate complete structural intelligence for a project.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"project_path\": \"sample_project_path\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RAG Code Intelligence",
+      "item": [
+        {
+          "name": "Clear Rag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/clear",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rag",
+                "clear"
+              ],
+              "query": []
+            },
+            "description": "Clear all indexed documents from the in-memory vector store."
+          },
+          "response": []
+        },
+        {
+          "name": "Index File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/index/file",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rag",
+                "index",
+                "file"
+              ],
+              "query": []
+            },
+            "description": "Chunk, embed, and index an individual file into the vector store.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file_path\": \"sample_file_path\",\n  \"content\": \"sample_content\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Index Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/index/project",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rag",
+                "index",
+                "project"
+              ],
+              "query": []
+            },
+            "description": "Scan and index all supported files within a project directory.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"project_path\": \"sample_project_path\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Rag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rag",
+                "search"
+              ],
+              "query": []
+            },
+            "description": "Retrieve semantically relevant code chunks with citations.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"sample_query\",\n  \"project_path\": \"sample_project_path\",\n  \"top_k\": 4,\n  \"min_score\": 0.0,\n  \"language\": \"sample_language\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rag Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/rag/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "rag",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Retrieve indexing statistics from the vector store."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Session",
+      "item": [
+        {
+          "name": "Get Active Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/active/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "active",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve the current active working session for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "End Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/end",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "end"
+              ],
+              "query": []
+            },
+            "description": "Conclude an active developer working session.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"sample_session_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Session Heartbeat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/heartbeat",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "heartbeat"
+              ],
+              "query": []
+            },
+            "description": "Touch working session heartbeat and update activity timestamp.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"sample_session_id\",\n  \"developer_id\": \"sample_developer_id\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/history/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "history",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch paginated working session history for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "start"
+              ],
+              "query": []
+            },
+            "description": "Initiate a new developer working session, concluding any active session.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"project_path\": \"sample_project_path\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Skills & Intelligence",
+      "item": [
+        {
+          "name": "Record Skill Evidence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/evidence",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "evidence"
+              ],
+              "query": []
+            },
+            "description": "Record verifiable evidence for a skill and re-evaluate developer proficiency.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"skill_name\": \"sample_skill_name\",\n  \"skill_id\": \"sample_skill_id\",\n  \"evidence_type\": \"implementation\",\n  \"description\": \"sample_description\",\n  \"project_path\": \"sample_project_path\",\n  \"programming_language\": \"sample_programming_language\",\n  \"framework\": \"sample_framework\",\n  \"evidence_source\": \"direct\",\n  \"evidence_strength\": 1.0,\n  \"confidence_score\": 1.0,\n  \"complexity_score\": 0.5,\n  \"related_activity_id\": \"sample_related_activity_id\",\n  \"metadata\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Evidence",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/evidence/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "evidence",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "skill_name",
+                  "value": "",
+                  "description": "Optional skill name filter",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Maximum evidence items to return",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Items to skip",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve chronological skill evidence records for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Perform Gap Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/gap-analysis",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "gap-analysis"
+              ],
+              "query": []
+            },
+            "description": "Analyze developer proficiencies to identify missing prerequisites and concept gaps.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_goal\": \"sample_target_goal\",\n  \"target_skill\": \"sample_target_skill\",\n  \"target_role\": \"sample_target_role\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Gaps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/gaps/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "gaps",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "target_goal",
+                  "value": "",
+                  "description": "Optional target skill",
+                  "disabled": true
+                },
+                {
+                  "key": "target_role",
+                  "value": "",
+                  "description": "Optional target career role",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch current detected knowledge gaps for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Graph Snapshot",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/graph",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "graph"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Filter skills by category",
+                  "disabled": true
+                },
+                {
+                  "key": "language",
+                  "value": "",
+                  "description": "Filter skills by language",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve technical skill graph topology with optional category/language filters."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Node",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/graph/{skill_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "graph",
+                ":skill_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve detailed node metadata for a skill in the graph."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Learning Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/learning-path",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "learning-path"
+              ],
+              "query": []
+            },
+            "description": "Generate an ordered, prerequisite-respecting learning path for a skill or role.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"developer_id\": \"sample_developer_id\",\n  \"target_goal\": \"sample_target_goal\",\n  \"target_role\": \"sample_target_role\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Learning Path",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/learning-path/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "learning-path",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "target_goal",
+                  "value": "",
+                  "description": "Target skill goal",
+                  "disabled": true
+                },
+                {
+                  "key": "target_role",
+                  "value": "",
+                  "description": "Target career role",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Fetch an ordered learning path for a developer toward a target goal or role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Skill Prerequisites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/prerequisites/{skill_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "prerequisites",
+                ":skill_id"
+              ],
+              "query": [
+                {
+                  "key": "transitive",
+                  "value": "False",
+                  "description": "Include transitive indirect prerequisites",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve prerequisite skills required for a given technical skill."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Proficiencies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/proficiency/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "proficiency",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve all assessed skill proficiencies for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Skill Proficiency",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/proficiency/{developer_id}/{skill_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "proficiency",
+                ":developer_id",
+                ":skill_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve current assessed proficiency and reasoning for a single skill."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Skill Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/profile/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "profile",
+                ":developer_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve complete multidimensional skill profile for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Developer Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/recommendations/{developer_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "recommendations",
+                ":developer_id"
+              ],
+              "query": [
+                {
+                  "key": "target_goal",
+                  "value": "",
+                  "description": "Optional target skill",
+                  "disabled": true
+                },
+                {
+                  "key": "target_role",
+                  "value": "",
+                  "description": "Optional target career role",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Generate prioritized, structured learning recommendations for a developer."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Related Skills",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/skills/related/{skill_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "skills",
+                "related",
+                ":skill_id"
+              ],
+              "query": []
+            },
+            "description": "Retrieve related or adjacent skills for a given technical skill."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

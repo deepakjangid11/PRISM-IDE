@@ -1,198 +1,192 @@
-# PRISM IDE
+# PRISM — AI-Powered Developer Task & Learning Platform
 
-PRISM IDE is an AI-powered developer intelligence and learning platform backend built with Python 3.14, FastAPI, and Pydantic. It extracts project intelligence from source code, records and evaluates developer behavior streams, tracks verified technical skills through a directed skill graph, generates personalized learning paths, and powers a multi-modal mentoring engine.
+**PRISM (Personalized Real-time Intelligent Skill Mentor)** is an AI-powered developer intelligence and personalized learning platform backend built with Python 3.14, FastAPI, Pydantic, and MySQL.
+
+PRISM acts as a personal AI technical mentor: assigning tailored practical development tasks to developers, guiding them progressively when they encounter difficulties, safely evaluating their work, tracking verified skill growth, and generating structured performance reports.
 
 ---
 
-## Architecture & Data Flow
-
-PRISM operates through an interconnected intelligence pipeline:
+## 1. Product Vision & End-to-End Workflow
 
 ```
-Source Code / AST
-      │
-      ▼
-Project Intelligence (Context, AST, Code Relationships, Dependencies)
-      │
-Developer Activity Stream ──► ActivityRecorder ──► ActivityAggregator ──► ActivitySessionAnalyzer
-                                                                                  │
-                                                                                  ▼
-                                                                     DeveloperBehaviorAnalyzer
-                                                                                  │
-Project Evidence + AST Artifacts ──► SkillAnalyzer ──► SkillTracker ◄─────────────┘
-                                                             │
-                                                             ▼
-                                                    SkillGraph (Prerequisites & Graph Topology)
-                                                             │
-                                                             ▼
-                                                    KnowledgeGapAnalyzer
-                                                             │
-                                                             ▼
-                                                   LearningPathGenerator & RecommendationEngine
-                                                             │
-                                                             ▼
-                                                      MentoringEngine
-                                               ┌─────────────┴─────────────┐
-                                               ▼                           ▼
-                                           Build Mode                  Learn Mode
+Developer Registration & Profile
+               │
+               ▼
+Skill Profiling & Knowledge Gap Analysis (SkillGraph + SkillTracker)
+               │
+               ▼
+Personalized Coding Task Generation (4 Tiers: Beginner, Elementary, Intermediate, Advanced, Expert)
+               │
+               ▼
+Task Attempt & Interactive AI Guided Mentoring (6 Progressive Levels + Anti-Spoiler Guard)
+               │
+               ▼
+Task Solution Submission (Source Code, File Tree, Git Repos, Explanations)
+               │
+               ▼
+Multi-Stage Safe Evaluation Engine (AST Analysis + Criteria Heuristics + Honest Sandbox Reporting)
+               │
+               ▼
+Verified Skill Evidence Generation (Score >= 70% converts to SkillEvidence)
+               │
+               ▼
+Longitudinal Progress Analytics & Periodic Reporting (Daily, Weekly, Monthly, Custom)
+               │
+               ▼
+Model Context Protocol (MCP) Integration (Secure AI Agent Tools + Persistent Audit Trail)
 ```
 
 ---
 
-## Core Capabilities
+## 2. Core Engines & Architecture
 
-### 1. Developer Behavior Intelligence (Phase 10B)
-- **`DeveloperBehaviorAnalyzer`**: Evaluates activity streams and session metrics to uncover genuine working patterns without relying on arbitrary event-count thresholds.
-- **Key Metrics Analyzed**:
-  - Testing habits: testing frequency, test failure rate, test success rate, test-to-edit ratio.
-  - Error and assistance rates: runtime/syntax error rates, frequency of AI help utilization.
-  - Context exploration: file switching frequency and unique touched files.
-  - Session characteristics: active duration distribution, sustained vs. burst sessions.
-- **`DeveloperBehaviorInsights`**: Strongly typed model encapsulating behavior metrics, activity distribution, and pattern indicators (e.g. test-driven development, elevated failure rates, focused vs. broad exploration).
+### A. Authentication & Security Engine (`prism.security`)
+- **Password Security**: Cryptographically secure PBKDF2-HMAC-SHA256 key derivation with 600,000 iterations and 16-byte random cryptographic salt (`prism.security.password`).
+- **Token Management**: Strict RFC 7519 HMAC-SHA256 JWT tokens with access and refresh tokens, base64url encoding, and tamper-proof verification (`prism.security.jwt`).
+- **Role-Based Access Control (RBAC)**: Enforced via FastAPI dependencies (`get_current_user`, `get_current_active_user`, `require_role`).
+- **Endpoints**: `/auth/register`, `/auth/login`, `/auth/logout`, `/auth/refresh`, `/auth/me`.
 
-### 2. Skill Tracking & Skill Graph (Phase 11)
-- **Evidence-Grounded Skills**: Technical proficiency is evaluated strictly through concrete, verifiable artifacts (`SkillEvidence`), such as code artifacts, test passes, and project features, rather than superficial activity counts.
-- **`SkillTracker`**: Multi-developer in-memory registry evaluating developer skills (`DeveloperSkill`) and profiles (`DeveloperSkillProfile`). Progresses deterministically from `insufficient_data` to `beginner`, `intermediate`, and `advanced` based on evidence depth, diversity, and multi-project verification.
-- **`SkillGraph`**: In-memory directed acyclic graph capturing technical relationships (`prerequisite`, `related`, `specialization_of`) with topological ordering and circular prerequisite prevention.
-- **`SkillAnalyzer`**: Automatically discovers observable skill evidence from Python source files, classes, and framework dependencies (e.g., FastAPI, Pydantic, pytest).
+### B. Personalized Task Generation Engine (`prism.intelligence.task_recommendation_engine`)
+- **Tiers**: Categorized across `BEGINNER`, `ELEMENTARY`, `INTERMEDIATE`, `ADVANCED`, and `EXPERT`.
+- **Comprehensive Task Specifications**: Each task automatically generates:
+  - Concise `title` and overview `description`.
+  - Detailed `problem_statement` grounded in real development challenges.
+  - Granular `learning_objectives`.
+  - Explicit functional and defensive `requirements`.
+  - Measurable `acceptance_criteria`.
+  - Structured baseline unit `test_cases` with inputs and expected outcomes.
+  - Progressive `hints` ordered from high-level intuition to concrete pointers.
+  - Expected `expected_deliverables` and multidimensional `evaluation_criteria`.
 
-### 3. Learning Intelligence (Phase 12)
-- **`KnowledgeGapAnalyzer`**: Compares a developer's verified skill profile against the skill graph to identify missing prerequisites, insufficient evidence, or proficiency gaps for any target skill.
-- **`LearningRecommendationEngine`**: Generates structured, prioritized, and deduplicated recommendations (`LearningRecommendation`) focusing on high-severity prerequisites first.
-- **`LearningPathGenerator`**: Constructs ordered learning paths (`LearningPath`) ensuring prerequisite skills precede dependent skills using topological sorting.
-- **`LearningProgressTracker`**: Evaluates completed, in-progress, and remaining skills on any active learning path (`LearningProgress`).
+### C. Interactive AI Guided Learning Engine (`prism.mentoring.guided_learning_service`)
+- **6 Progressive Guidance Levels**:
+  1. **Level 1 — Conceptual**: Mental models, invariant boundaries, and core design principles.
+  2. **Level 2 — Approach**: Architectural decomposition and modular staging strategy.
+  3. **Level 3 — Hints**: Targeted, progressive clues that nudge developers without spoiling the solution.
+  4. **Level 4 — Step-by-Step**: Task milestone breakdown into actionable, achievable sub-steps.
+  5. **Level 5 — Code Concepts**: Illustrative syntax patterns and idiomatic structural examples.
+  6. **Level 6 — Debugging**: Root-cause analysis, failure isolation, and error diagnostics.
+- **Anti-Spoiler Guard**: Strict protection ensuring reference code implementations are never output unless explicitly permitted (`allow_solution=True`).
+- **Stateful Dialogue**: Multi-turn mentoring conversations with full message history persisted in `mentoring_conversations` and `mentoring_messages`.
 
-### 4. Mentoring Engine (Phase 13)
-- **`MentoringEngine` & `MentorContextBuilder`**: Compiles multi-dimensional intelligence (project structure, developer behavior telemetry, skill profile, and knowledge gaps) to deliver contextual mentoring responses.
-- **Two Operational Modes**:
-  - **Build Mode**: Mentoring focused on project architecture, code relationships, external dependency audits, unparseable files, and test stability.
-  - **Learn Mode**: Concept explanation, prerequisite gap remediation, and structured step-by-step learning roadmaps.
-- **Provider-Ready Extensibility**: Uses `BaseMentorGenerator` protocol and `DeterministicMentorGenerator` default implementation, enabling clean future integration with external LLM providers (Groq, OpenAI, Gemini) without architectural refactoring.
+### D. Task Submission & Safe Evaluation Engine (`prism.evaluation.engine`)
+- **Multi-Format Ingestion**: Supports single-file source code, multi-file virtual directory trees, Git repository URLs, and developer architectural explanations.
+- **Strict Host Process Safety**: **Never executes untrusted developer code directly inside the host FastAPI application process without container isolation.**
+- **Honest Sandbox Capability Reporting**: Automatically audits whether an isolated container runtime is available; if absent, transparently marks dynamic test executions as `skipped_no_sandbox`.
+- **Multi-Stage Evaluation**:
+  - Stage 1: Static AST validation catching `SyntaxError` and unparseable constructs.
+  - Stage 2: Code quality and construct discovery (functions, classes, docstrings, type annotations, defensive `try/except` blocks).
+  - Stage 3: Acceptance criteria verification and keyword heuristics.
+  - Stage 4: Scoring (0–100) and automated skill evidence generation: any submission with score $\ge 70$ produces verified `SkillEvidence`.
 
----
+### E. Developer Progress Analytics & Reporting (`prism.reporting.report_generator`)
+- **Periodic Scope**: Daily, Weekly, Monthly, and Custom timeframe reports.
+- **True Database Metrics**: Aggregated across real task completions, evaluation scores, passing ratios, learning consistency scores, and active study days.
+- **Structured Dashboard Outputs**: Pre-formatted JSON schemas ready for UI dashboards, tracking top strengths, critical weaknesses, and personalized recommendations.
 
-### 5. Multi-Language Developer Activity Intelligence (Phase 17)
-- **Extensible Adapters**: Pluggable language adapters for Python, Java, C#, TypeScript, JavaScript, Go, Rust, C, C++, PHP, Ruby, Kotlin, Swift, Dart, SQL, HTML, CSS.
-- **`ActivityClassifier`**: Multi-dimensional activity classification categorizing development actions into backend, frontend, database, DevOps, testing, systems, and mobile.
-- **`ActivityAggregationEngine`**: Real-time aggregation of coding activities into language distributions, framework usage, and session velocities.
-
-### 6. Advanced Skill Graph, Evidence Intelligence & Skill Gap Detection (Phase 18)
-- **`SkillEvidenceEngine`**: Continuous ingestion of developer activities into verifiable `SkillEvidence` artifacts with SHA256 deduplication, event weighting, implementation complexity estimation, and filtering of non-evidential events.
-- **Advanced `SkillGraph`**: Rich `SkillNode` registry supporting multi-language metadata, category/language filtering, career role competencies (e.g. Machine Learning Engineer, Backend Developer, Full Stack Developer, Frontend Developer, Mobile Developer), and cycle-safe directed topological traversal.
-- **Proficiency Intelligence (`SkillTracker`)**: Multi-factor scoring model assessing quantity (with diminishing returns), evidence quality/strength, complexity, project diversity, and observation confidence across `insufficient_data`, `beginner`, `elementary`, `intermediate`, `advanced`, and `expert` with human-readable diagnostic explanations.
-- **`KnowledgeGapAnalyzer`**: Multi-path gap detection identifying missing prerequisites and under-proficient competencies against target technical skills and career roles.
-- **`LearningRecommendationEngine`**: Generates prioritized recommendations (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) with target proficiency goals, difficulty levels, and realistic effort estimations.
-- **`LearningPathGenerator`**: Dependency-aware topological roadmap synthesis skipping acquired prerequisites and calculating effort hours.
-- **MySQL Persistence**: Full storage integration into MySQL 8.0+ via SQLAlchemy 2.0 with zero SQLite dependencies, preserving evidence metadata and multidimensional developer skill profiles.
-
-### 7. Advanced Developer Intelligence & Adaptive Mentoring (Phase 19)
-- **`DeveloperIntelligenceEngine`**: Synthesizes behavioral telemetry, skill proficiency, error frequency, and learning trends into comprehensive developer profiles with categorized insights (strengths, gaps, recurring errors) and trend trajectories.
-- **`AdaptiveMentoringEngine`**: Delivers personalized mentoring by dynamically adjusting strategies (`conceptual_explanation`, `guided_implementation`, `debugging_guidance`, `step_by_step_learning`, `practical_exercise`, `advanced_technical_guidance`) and measures mentoring effectiveness over time.
-- **`TaskRecommendationEngine`**: Generates targeted coding tasks tailored to active competency gaps, tracking lifecycle progress and converting successful task evaluations into verifiable `SkillEvidence`.
-- **`DeveloperPerformanceAnalytics`**: Calculates role readiness scores, skill improvement velocities, and persists point-in-time performance snapshots.
-- **`IntelligentFeedbackEngine` & `LearningAdaptationEngine`**: Produces contextual constructive feedback and recalibrates pedagogical learning strategies based on developer progress.
-- **`CrossModuleIntelligenceOrchestrator`**: Unifies telemetry ingestion and synchronization across activity, skill, gap, task, and mentoring engines.
-
----
-
-## API Endpoints
-
-FastAPI endpoints are exposed under modular routers:
-
-- **Developer Intelligence & Orchestration (Phase 19)**:
-  - `GET /intelligence/profile/{developer_id}`: Comprehensive developer intelligence profile.
-  - `GET /intelligence/insights/{developer_id}`: Categorized strengths, gaps, and error insights.
-  - `GET /intelligence/trends/{developer_id}`: Skill proficiency trajectories and velocity.
-  - `POST /intelligence/refresh/{developer_id}`: Force re-analysis and profile refresh.
-  - `POST /intelligence/orchestrate/activity`: Orchestrate telemetry ingestion and recalibration.
-  - `POST /intelligence/orchestrate/sync`: Synchronize profile, gaps, tasks, and strategy for a developer.
-- **Personalized Tasks (Phase 19)**:
-  - `POST /tasks/generate`: Generate gap-targeted personalized tasks.
-  - `GET /tasks/recommendations/{developer_id}`: Query recommended tasks for a developer.
-  - `GET /tasks/{task_id}`: Fetch task details.
-  - `PATCH /tasks/{task_id}/status`: Update task progress status and execution notes.
-  - `POST /tasks/{task_id}/evaluate`: Evaluate task completion, record outcome, and generate verifiable skill evidence.
-- **Performance Analytics (Phase 19)**:
-  - `GET /analytics/performance/{developer_id}`: Overview analytics with role readiness.
-  - `GET /analytics/improvement/{developer_id}`: Longitudinal skill improvement velocity.
-  - `GET /analytics/learning/{developer_id}`: Learning progress and task completion rates.
-  - `GET /analytics/history/{developer_id}`: Historical performance snapshots.
-- **Intelligent Feedback (Phase 19)**:
-  - `GET /feedback/{developer_id}`: Recent proactive feedback for developer.
-  - `POST /feedback/generate`: Generate contextual feedback.
-  - `GET /feedback/history/{developer_id}`: Longitudinal feedback history.
-- **Learning Adaptation (Phase 19)**:
-  - `POST /adaptation/adapt`: Recalibrate pedagogical learning strategy.
-  - `GET /adaptation/strategy/{developer_id}`: Retrieve active learning strategy.
-  - `GET /adaptation/history/{developer_id}`: Adaptation history logs.
-- **Adaptive Mentoring (Phase 19)**:
-  - `POST /mentoring/adaptive`: Request personalized, strategy-tailored mentoring.
-  - `GET /mentoring/history/{developer_id}`: Historical mentoring session logs.
-  - `GET /mentoring/effectiveness/{developer_id}`: Quantified mentoring effectiveness score and strategy distribution.
-
-- **Project Intelligence**:
-  - `POST /projects/analyze`: Analyze project files and syntax.
-  - `POST /projects/intelligence`: Generate full structural, dependency, and relationship intelligence.
-- **Developer Identity & Working Sessions (Phase 16)**:
-  - `POST /developer/register`: Register new developer identity.
-  - `POST /developer/identify`: Resolve developer identity.
-  - `POST /developer/session/start`: Start active working session.
-  - `POST /developer/session/heartbeat`: Touch session activity heartbeat.
-  - `POST /developer/session/end`: Terminate active working session.
-  - `GET /developer/session/active/{developer_id}`: Retrieve current active session.
-  - `GET /developer/session/history/{developer_id}`: Paginated working session history.
-- **Multi-Language Developer Activity Intelligence (Phase 17)**:
-  - `POST /activity/record`: Ingest developer activity event.
-  - `POST /activity/classify`: Classify source code activity across languages.
-  - `GET /activity/developer/{developer_id}`: Retrieve developer activity stream.
-  - `GET /activity/summary/{developer_id}`: Multi-language activity intelligence summary.
-- **Advanced Skills & Intelligence (Phase 18)**:
-  - `GET /skills/profile/{developer_id}`: Retrieve multidimensional skill profile with rollups.
-  - `POST /skills/evidence`: Record verifiable skill evidence and trigger proficiency evaluation.
-  - `GET /skills/evidence/{developer_id}`: Chronological skill evidence records with filtering.
-  - `GET /skills/proficiency/{developer_id}`: Complete assessed skill competencies map.
-  - `GET /skills/proficiency/{developer_id}/{skill_id}`: Assessed proficiency and explainability reasoning for a single skill.
-  - `GET /skills/graph`: Full or filtered (category, language) skill graph topology snapshot.
-  - `GET /skills/graph/{skill_id}`: Detailed `SkillNode` metadata.
-  - `GET /skills/prerequisites/{skill_id}`: Direct or transitive prerequisite skills.
-  - `GET /skills/related/{skill_id}`: Related adjacent technical concepts.
-  - `POST /skills/gap-analysis`: Analyze competency gaps for target skill or career role.
-  - `GET /skills/gaps/{developer_id}`: Query detected gaps for developer.
-  - `GET /skills/recommendations/{developer_id}`: Prioritized, effort-estimated learning recommendations.
-  - `POST /skills/learning-path`: Generate dependency-aware topological learning path.
-  - `GET /skills/learning-path/{developer_id}`: Query tailored learning path for skill or role.
-- **Mentoring**:
-  - `POST /mentoring/request`: Submit mentoring request in Build or Learn Mode.
-- **Health**:
-  - `GET /health`: System health and service metadata.
+### F. Model Context Protocol (MCP) Integration (`prism.mcp.service`)
+- **Authorized Tool Registry**:
+  - `get_developer_task`: Retrieve task problem statements and requirements.
+  - `read_project_file`: Secure workspace inspection with **path traversal defense** blocking `../` escapes.
+  - `get_task_progress`: Query developer completion rates, evaluations, and consistency.
+  - `search_knowledge_docs`: Semantic RAG search across project documentation.
+  - `submit_task_evaluation`: Programmatic submission evaluation for AI agent workflows.
+  - `get_developer_report`: Generate and fetch comprehensive developer performance reports.
+- **Audit Logging**: Every tool execution is recorded in MySQL `mcp_audit_logs` with execution duration, caller identity, arguments, and outcome status.
 
 ---
 
-## Running Quality Verification & Tests
+## 3. Database Schema & Alembic Migrations
 
-PRISM uses `uv` for dependency management, Ruff for linting and formatting, MyPy for static type checking, and pytest for testing.
+PRISM utilizes MySQL 8.0+ managed via Alembic migrations:
 
-### 1. Run Linting
+- **Revision `0001`**: Core tables (`developers`, `developer_sessions`, `activities`, `skills`, `skill_evidence`, `learning_paths`).
+- **Revision `0002`**: Enhanced activity, session, and skill graph tables.
+- **Revision `0003`**: Phase 19 tables (`developer_insights`, `developer_feedbacks`, `personalized_tasks`, `task_outcomes`, `mentoring_sessions`, `learning_adaptations`).
+- **Revision `0004` (Head — `0004_task_learning_platform`)**:
+  - `developers`: Extended with `password_hash`, `role`, and `is_active`.
+  - `personalized_tasks`: Extended with `problem_statement`, `learning_objectives_json`, `requirements_json`, `test_cases_json`, `hints_json`, `expected_deliverables_json`, and `evaluation_criteria_json`.
+  - `task_submissions`: Developer task solutions (code, file tree, repo, explanation, status).
+  - `task_evaluations`: Detailed multi-stage evaluation reports (score, strengths, mistakes, test results, evidence links).
+  - `mentoring_conversations`: Stateful mentoring dialogue sessions.
+  - `mentoring_messages`: Individual dialogue messages with guidance levels and metadata.
+  - `developer_reports`: Periodic performance reports with metrics and content payloads.
+  - `mcp_audit_logs`: Audit trail for Model Context Protocol tool invocations.
+
+---
+
+## 4. REST API Endpoint Reference
+
+### Authentication (`/auth`)
+- `POST /auth/register`: Register new developer with email and password.
+- `POST /auth/login`: Authenticate and receive JWT access and refresh tokens.
+- `POST /auth/refresh`: Exchange refresh token for new access token.
+- `POST /auth/logout`: Invalidate current developer session.
+- `GET /auth/me`: Retrieve profile of currently authenticated developer (`Bearer` token).
+
+### Task Platform & Recommendations (`/tasks`)
+- `POST /tasks/generate`: Generate gap-targeted personalized tasks.
+- `GET /tasks/recommendations/{developer_id}`: Query recommended tasks for developer.
+- `GET /tasks/{task_id}`: Retrieve detailed task specification.
+- `POST /tasks/{task_id}/assign`: Accept and assign task to developer.
+- `POST /tasks/{task_id}/submit`: Submit solution (code, file tree, repo URL, explanation).
+- `GET /tasks/{task_id}/submissions`: List submissions for a specific task.
+- `GET /tasks/developer/{developer_id}`: List all tasks assigned to developer.
+
+### Safe Task Evaluation (`/evaluation`)
+- `POST /evaluation/submissions/{submission_id}`: Trigger multi-stage evaluation on a submission.
+- `GET /evaluation/{evaluation_id}`: Retrieve evaluation report by ID.
+- `GET /evaluation/submissions/{submission_id}/result`: Fetch evaluation for a submission.
+- `GET /evaluation/developer/{developer_id}`: List evaluations for a developer.
+
+### Interactive Guided Mentoring (`/mentoring`)
+- `POST /mentoring/conversations/start`: Start task-linked mentoring conversation.
+- `GET /mentoring/conversations/{conversation_id}`: Fetch conversation details.
+- `POST /mentoring/conversations/{conversation_id}/message`: Send message at specified guidance level.
+- `GET /mentoring/conversations/{conversation_id}/history`: Retrieve full message history.
+- `POST /mentoring/conversations/{conversation_id}/hint`: Request next progressive hint (Level 3).
+- `POST /mentoring/conversations/{conversation_id}/step-by-step`: Request task milestone breakdown (Level 4).
+- `POST /mentoring/conversations/{conversation_id}/debug`: Request error diagnosis assistance (Level 6).
+
+### Progress Analytics & Dashboard (`/progress`)
+- `GET /progress/{developer_id}/dashboard`: Executive summary metrics (tasks, scores, consistency, gaps).
+- `GET /progress/{developer_id}/skills`: Detailed skill proficiency breakdown and evidence counts.
+- `GET /progress/{developer_id}/history`: Chronological progression timeline.
+- `GET /progress/{developer_id}/learning-paths`: Active learning paths and completion ratios.
+
+### Performance Reports (`/reports`)
+- `POST /reports/generate`: Generate and persist daily, weekly, monthly, or custom report.
+- `GET /reports/{report_id}`: Retrieve specific report by ID.
+- `GET /reports/developer/{developer_id}`: List generated reports for a developer.
+
+### Model Context Protocol (`/mcp`)
+- `GET /mcp/tools`: List all registered, authorized MCP tools and input schemas.
+- `POST /mcp/tools/execute`: Execute authorized MCP tool with timing, security checks, and audit logging.
+- `GET /mcp/audit`: Query historical MCP tool execution audit logs.
+
+---
+
+## 5. Quality Verification & Testing
+
+PRISM enforces strict static analysis, complete type safety, and rigorous test coverage.
+
+### Run Linting (Ruff)
 ```powershell
 uv run ruff check .
 ```
 
-### 2. Check Formatting
+### Check Formatting (Ruff)
 ```powershell
 uv run ruff format --check .
 ```
 
-### 3. Run Static Type Checking
+### Static Type Checking (MyPy)
 ```powershell
-uv run mypy src
+uv run mypy src tests
 ```
 
-### 4. Execute Full Test Suite
+### Run Full Test Suite with Coverage (Pytest)
 ```powershell
-uv run pytest -v
+uv run pytest --cov=src/prism tests/
 ```
-
-### 5. Run Test Coverage
-```powershell
-uv run pytest --cov=prism --cov-report=term-missing
-```
+*(427 tests passing, 90% total test coverage across all modules)*

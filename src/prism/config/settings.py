@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     debug: bool = True
     storage_backend: str = "mysql"  # Options: "mysql", "memory"
 
+    # Security & Authentication Configuration
+    secret_key: str = "prism_super_secret_jwt_key_change_in_production"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 7
+
     # Developer Session Management Configuration
     session_timeout_minutes: int = 30
     session_heartbeat_interval_seconds: int = 60

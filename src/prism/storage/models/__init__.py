@@ -22,6 +22,14 @@ from prism.storage.models.skill_records import (
     SkillRecord,
     SkillRelationshipRecord,
 )
+from prism.storage.models.task_platform_records import (
+    DeveloperReportRecord,
+    MCPAuditLogRecord,
+    MentoringConversationRecord,
+    MentoringMessageRecord,
+    TaskEvaluationRecord,
+    TaskSubmissionRecord,
+)
 
 __all__ = [
     "Base",
@@ -30,16 +38,22 @@ __all__ = [
     "DeveloperInsightRecord",
     "DeveloperPerformanceSnapshotRecord",
     "DeveloperRecord",
+    "DeveloperReportRecord",
     "DeveloperSessionRecord",
     "DeveloperSkillRecord",
     "LearningAdaptationRecord",
     "LearningProgressHistoryRecord",
     "LearningProgressItemRecord",
     "LearningProgressRecord",
+    "MCPAuditLogRecord",
+    "MentoringConversationRecord",
+    "MentoringMessageRecord",
     "MentoringSessionRecordEntity",
     "PersonalizedTaskRecord",
     "SkillEvidenceRecord",
     "SkillRecord",
     "SkillRelationshipRecord",
+    "TaskEvaluationRecord",
     "TaskOutcomeRecord",
+    "TaskSubmissionRecord",
 ]

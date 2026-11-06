@@ -42,5 +42,7 @@ build/
 dist/
 *.egg-info/
 
-# Local PRISM RAG data
-.prism/rag_store.json
+# Local PRISM runtime & cache data
+.prism/
+*.db
+*.sqlite

@@ -20,6 +20,14 @@ from prism.intelligence.models.skill_models import (
     SkillEvidence,
     SkillRelationship,
 )
+from prism.intelligence.models.task_platform_models import (
+    DetailedTaskEvaluation,
+    DeveloperReport,
+    MCPAuditLog,
+    MentoringConversation,
+    MentoringMessage,
+    TaskSubmission,
+)
 from prism.learning.models import LearningProgress
 from prism.mentoring.models import MentoringSessionRecord
 
@@ -91,6 +99,44 @@ class InMemoryDeveloperRepository:
         }
         self._developers[cleaned_id] = rec
         return rec
+
+    def create_user(
+        self,
+        developer_id: str,
+        email: str,
+        password_hash: str,
+        name: str | None = None,
+        role: str = "developer",
+    ) -> dict[str, Any]:
+        cleaned_id = developer_id.strip()
+        cleaned_email = email.strip().lower()
+        if not cleaned_id:
+            raise ValueError("Developer ID cannot be empty")
+        if cleaned_id in self._developers:
+            raise ValueError(f"Developer with ID '{cleaned_id}' already exists")
+        if any(d.get("email") == cleaned_email for d in self._developers.values()):
+            raise ValueError(f"Developer with email '{cleaned_email}' already exists")
+        now = datetime.now(UTC)
+        rec = {
+            "developer_id": cleaned_id,
+            "name": name,
+            "email": cleaned_email,
+            "password_hash": password_hash,
+            "role": role,
+            "is_active": True,
+            "created_at": now,
+            "updated_at": now,
+        }
+        self._developers[cleaned_id] = rec
+        return rec
+
+    def update_password(self, developer_id: str, password_hash: str) -> bool:
+        cleaned_id = developer_id.strip()
+        if cleaned_id not in self._developers:
+            return False
+        self._developers[cleaned_id]["password_hash"] = password_hash
+        self._developers[cleaned_id]["updated_at"] = datetime.now(UTC)
+        return True
 
     def update_developer(
         self,
@@ -657,3 +703,132 @@ class InMemoryIntelligenceRepository:
             return None
         matched.sort(key=lambda x: x.timestamp, reverse=True)
         return matched[0]
+
+
+class InMemoryTaskPlatformRepository:
+    """In-memory implementation of TaskPlatformRepository for testing and offline execution."""
+
+    def __init__(self, dev_repo: InMemoryDeveloperRepository | None = None) -> None:
+        self._dev_repo = dev_repo or InMemoryDeveloperRepository()
+        self._submissions: dict[str, TaskSubmission] = {}
+        self._evaluations: dict[str, DetailedTaskEvaluation] = {}
+        self._conversations: dict[str, MentoringConversation] = {}
+        self._messages: list[MentoringMessage] = []
+        self._reports: dict[str, DeveloperReport] = {}
+        self._mcp_audits: list[MCPAuditLog] = []
+
+    def save_submission(self, submission: TaskSubmission) -> None:
+        self._dev_repo.ensure_developer(submission.developer_id)
+        self._submissions[submission.submission_id] = submission
+
+    def get_submission(self, submission_id: str) -> TaskSubmission | None:
+        return self._submissions.get(submission_id)
+
+    def get_submissions_for_task(self, task_id: str) -> list[TaskSubmission]:
+        subs = [s for s in self._submissions.values() if s.task_id == task_id]
+        subs.sort(key=lambda s: s.submitted_at, reverse=True)
+        return subs
+
+    def get_submissions_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[TaskSubmission]:
+        subs = [s for s in self._submissions.values() if s.developer_id == developer_id]
+        subs.sort(key=lambda s: s.submitted_at, reverse=True)
+        return subs[offset : offset + limit]
+
+    def update_submission_status(self, submission_id: str, status: str) -> None:
+        if submission_id in self._submissions:
+            sub = self._submissions[submission_id]
+            self._submissions[submission_id] = sub.model_copy(update={"status": status})
+
+    def save_evaluation(self, evaluation: DetailedTaskEvaluation) -> None:
+        self._evaluations[evaluation.evaluation_id] = evaluation
+
+    def get_evaluation(self, evaluation_id: str) -> DetailedTaskEvaluation | None:
+        return self._evaluations.get(evaluation_id)
+
+    def get_evaluation_by_submission(
+        self, submission_id: str
+    ) -> DetailedTaskEvaluation | None:
+        for ev in self._evaluations.values():
+            if ev.submission_id == submission_id:
+                return ev
+        return None
+
+    def get_evaluations_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DetailedTaskEvaluation]:
+        evs = [e for e in self._evaluations.values() if e.developer_id == developer_id]
+        evs.sort(key=lambda e: e.evaluated_at, reverse=True)
+        return evs[offset : offset + limit]
+
+    def create_conversation(self, conversation: MentoringConversation) -> None:
+        self._dev_repo.ensure_developer(conversation.developer_id)
+        self._conversations[conversation.conversation_id] = conversation
+
+    def get_conversation(self, conversation_id: str) -> MentoringConversation | None:
+        return self._conversations.get(conversation_id)
+
+    def get_conversations_for_developer(
+        self, developer_id: str, task_id: str | None = None
+    ) -> list[MentoringConversation]:
+        convs = [
+            c for c in self._conversations.values() if c.developer_id == developer_id
+        ]
+        if task_id:
+            convs = [c for c in convs if c.task_id == task_id]
+        convs.sort(key=lambda c: c.updated_at, reverse=True)
+        return convs
+
+    def update_conversation_level(
+        self, conversation_id: str, guidance_level: int
+    ) -> None:
+        if conversation_id in self._conversations:
+            conv = self._conversations[conversation_id]
+            self._conversations[conversation_id] = conv.model_copy(
+                update={
+                    "current_guidance_level": guidance_level,
+                    "updated_at": datetime.now(UTC),
+                }
+            )
+
+    def save_message(self, message: MentoringMessage) -> None:
+        self._messages.append(message)
+        if message.conversation_id in self._conversations:
+            conv = self._conversations[message.conversation_id]
+            self._conversations[message.conversation_id] = conv.model_copy(
+                update={"updated_at": message.created_at}
+            )
+
+    def get_messages(
+        self, conversation_id: str, limit: int = 100
+    ) -> list[MentoringMessage]:
+        msgs = [m for m in self._messages if m.conversation_id == conversation_id]
+        msgs.sort(key=lambda m: m.created_at)
+        return msgs[:limit]
+
+    def save_report(self, report: DeveloperReport) -> None:
+        self._dev_repo.ensure_developer(report.developer_id)
+        self._reports[report.report_id] = report
+
+    def get_report(self, report_id: str) -> DeveloperReport | None:
+        return self._reports.get(report_id)
+
+    def get_reports_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperReport]:
+        reps = [r for r in self._reports.values() if r.developer_id == developer_id]
+        reps.sort(key=lambda r: r.generated_at, reverse=True)
+        return reps[offset : offset + limit]
+
+    def save_mcp_audit(self, audit: MCPAuditLog) -> None:
+        self._mcp_audits.append(audit)
+
+    def get_mcp_audits(
+        self, caller_id: str | None = None, limit: int = 50
+    ) -> list[MCPAuditLog]:
+        logs = self._mcp_audits
+        if caller_id:
+            logs = [l for l in logs if l.caller_id == caller_id]
+        logs.sort(key=lambda l: l.timestamp, reverse=True)
+        return logs[:limit]

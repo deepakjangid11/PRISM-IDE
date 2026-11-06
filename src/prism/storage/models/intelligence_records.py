@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, Float, ForeignKey, Index, Integer, String
+from sqlalchemy import JSON, Boolean, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -116,6 +116,23 @@ class PersonalizedTaskRecord(Base):
     reason: Mapped[str] = mapped_column(String(1024), nullable=False)
     acceptance_criteria_json: Mapped[list[Any]] = mapped_column(
         JSON, nullable=False, default=list
+    )
+    problem_statement: Mapped[str | None] = mapped_column(Text, nullable=True)
+    learning_objectives_json: Mapped[list[Any]] = mapped_column(
+        JSON, nullable=True, default=list
+    )
+    requirements_json: Mapped[list[Any]] = mapped_column(
+        JSON, nullable=True, default=list
+    )
+    test_cases_json: Mapped[list[Any]] = mapped_column(
+        JSON, nullable=True, default=list
+    )
+    hints_json: Mapped[list[Any]] = mapped_column(JSON, nullable=True, default=list)
+    expected_deliverables_json: Mapped[list[Any]] = mapped_column(
+        JSON, nullable=True, default=list
+    )
+    evaluation_criteria_json: Mapped[list[Any]] = mapped_column(
+        JSON, nullable=True, default=list
     )
     created_at: Mapped[datetime] = mapped_column(
         DATETIME(fsp=6), nullable=False, index=True

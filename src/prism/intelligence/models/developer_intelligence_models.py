@@ -64,7 +64,10 @@ class TaskStatus(StrEnum):
     GENERATED = "generated"
     ACCEPTED = "accepted"
     IN_PROGRESS = "in_progress"
+    SUBMITTED = "submitted"
+    EVALUATED = "evaluated"
     COMPLETED = "completed"
+    FAILED = "failed"
     REJECTED = "rejected"
     CANCELLED = "cancelled"
 
@@ -227,6 +230,13 @@ class PersonalizedTask(BaseModel):
     prerequisite_skills: list[str] = Field(default_factory=list)
     reason: str
     acceptance_criteria: list[str] = Field(default_factory=list)
+    problem_statement: str | None = None
+    learning_objectives: list[str] = Field(default_factory=list)
+    requirements: list[str] = Field(default_factory=list)
+    test_cases: list[dict[str, Any]] = Field(default_factory=list)
+    hints: list[str] = Field(default_factory=list)
+    expected_deliverables: list[str] = Field(default_factory=list)
+    evaluation_criteria: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 

@@ -25,6 +25,14 @@ if TYPE_CHECKING:
         SkillEvidence,
         SkillRelationship,
     )
+    from prism.intelligence.models.task_platform_models import (
+        DetailedTaskEvaluation,
+        DeveloperReport,
+        MCPAuditLog,
+        MentoringConversation,
+        MentoringMessage,
+        TaskSubmission,
+    )
     from prism.learning.models import LearningProgress
     from prism.mentoring.models import MentoringSessionRecord
 
@@ -56,6 +64,21 @@ class DeveloperRepository(Protocol):
         email: str | None = None,
     ) -> dict[str, Any]:
         """Create a new developer record, rejecting duplicates."""
+        ...
+
+    def create_user(
+        self,
+        developer_id: str,
+        email: str,
+        password_hash: str,
+        name: str | None = None,
+        role: str = "developer",
+    ) -> dict[str, Any]:
+        """Create a new authenticated user record."""
+        ...
+
+    def update_password(self, developer_id: str, password_hash: str) -> bool:
+        """Update developer password hash."""
         ...
 
     def update_developer(
@@ -334,4 +357,109 @@ class IntelligenceRepository(Protocol):
 
     def get_latest_adaptation(self, developer_id: str) -> LearningAdaptation | None:
         """Fetch most recent learning adaptation."""
+        ...
+
+
+class TaskPlatformRepository(Protocol):
+    """Protocol for task submissions, evaluations, mentoring conversations, reports, and MCP audits."""
+
+    # Submissions
+    def save_submission(self, submission: TaskSubmission) -> None:
+        """Persist a developer's task submission."""
+        ...
+
+    def get_submission(self, submission_id: str) -> TaskSubmission | None:
+        """Fetch a specific task submission by ID."""
+        ...
+
+    def get_submissions_for_task(self, task_id: str) -> list[TaskSubmission]:
+        """Fetch all submissions for a given task."""
+        ...
+
+    def get_submissions_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[TaskSubmission]:
+        """Fetch submissions for a developer."""
+        ...
+
+    def update_submission_status(self, submission_id: str, status: str) -> None:
+        """Update the processing status of a submission."""
+        ...
+
+    # Evaluations
+    def save_evaluation(self, evaluation: DetailedTaskEvaluation) -> None:
+        """Persist structured automated evaluation results."""
+        ...
+
+    def get_evaluation(self, evaluation_id: str) -> DetailedTaskEvaluation | None:
+        """Fetch evaluation results by ID."""
+        ...
+
+    def get_evaluation_by_submission(
+        self, submission_id: str
+    ) -> DetailedTaskEvaluation | None:
+        """Fetch evaluation result corresponding to a submission."""
+        ...
+
+    def get_evaluations_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DetailedTaskEvaluation]:
+        """Fetch evaluation history for a developer."""
+        ...
+
+    # Mentoring Conversations & Messages
+    def create_conversation(self, conversation: MentoringConversation) -> None:
+        """Create or update a guided mentoring conversation."""
+        ...
+
+    def get_conversation(self, conversation_id: str) -> MentoringConversation | None:
+        """Retrieve conversation metadata."""
+        ...
+
+    def get_conversations_for_developer(
+        self, developer_id: str, task_id: str | None = None
+    ) -> list[MentoringConversation]:
+        """Retrieve developer conversations, optionally filtered by task."""
+        ...
+
+    def update_conversation_level(
+        self, conversation_id: str, guidance_level: int
+    ) -> None:
+        """Update current progressive guidance level."""
+        ...
+
+    def save_message(self, message: MentoringMessage) -> None:
+        """Save a message to conversation history."""
+        ...
+
+    def get_messages(
+        self, conversation_id: str, limit: int = 100
+    ) -> list[MentoringMessage]:
+        """Retrieve messages in chronological order."""
+        ...
+
+    # Reports
+    def save_report(self, report: DeveloperReport) -> None:
+        """Persist a generated performance report."""
+        ...
+
+    def get_report(self, report_id: str) -> DeveloperReport | None:
+        """Fetch a progress report by ID."""
+        ...
+
+    def get_reports_for_developer(
+        self, developer_id: str, limit: int = 50, offset: int = 0
+    ) -> list[DeveloperReport]:
+        """Fetch reports for a developer."""
+        ...
+
+    # MCP Audit
+    def save_mcp_audit(self, audit: MCPAuditLog) -> None:
+        """Persist an MCP tool execution audit log entry."""
+        ...
+
+    def get_mcp_audits(
+        self, caller_id: str | None = None, limit: int = 50
+    ) -> list[MCPAuditLog]:
+        """Fetch MCP audit logs."""
         ...

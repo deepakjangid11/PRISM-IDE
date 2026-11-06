@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from prism.api.dependencies import (
@@ -26,6 +26,7 @@ from prism.learning.models import (
     LearningRecommendation,
 )
 from prism.logging.logger import get_logger
+from prism.security import get_optional_current_user, verify_developer_ownership
 
 logger = get_logger(__name__)
 
@@ -107,7 +108,10 @@ class SkillLearningPathRequest(BaseModel):
     response_model=DeveloperSkillProfile,
     status_code=status.HTTP_200_OK,
 )
-async def get_developer_skill_profile(developer_id: str) -> DeveloperSkillProfile:
+async def get_developer_skill_profile(
+    developer_id: str,
+    current_user: Any = Depends(get_optional_current_user),
+) -> DeveloperSkillProfile:
     """Retrieve complete multidimensional skill profile for a developer."""
     cleaned_id = developer_id.strip()
     if not cleaned_id:
@@ -115,6 +119,7 @@ async def get_developer_skill_profile(developer_id: str) -> DeveloperSkillProfil
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
     try:
         logger.info("API request: fetch skill profile | dev=%s", cleaned_id)
         return skill_tracker.get_profile(cleaned_id)
@@ -135,8 +140,12 @@ async def get_developer_skill_profile(developer_id: str) -> DeveloperSkillProfil
     response_model=DeveloperSkill,
     status_code=status.HTTP_201_CREATED,
 )
-async def record_skill_evidence(request: RecordEvidenceAPIRequest) -> DeveloperSkill:
+async def record_skill_evidence(
+    request: RecordEvidenceAPIRequest,
+    current_user: Any = Depends(get_optional_current_user),
+) -> DeveloperSkill:
     """Record verifiable evidence for a skill and re-evaluate developer proficiency."""
+    verify_developer_ownership(request.developer_id.strip(), current_user)
     try:
         now = datetime.now(UTC)
         canonical_skill_id = (
@@ -195,6 +204,7 @@ async def get_developer_evidence(
         default=50, ge=1, le=500, description="Maximum evidence items to return"
     ),
     offset: int = Query(default=0, ge=0, description="Items to skip"),
+    current_user: Any = Depends(get_optional_current_user),
 ) -> list[SkillEvidence]:
     """Retrieve chronological skill evidence records for a developer."""
     cleaned_id = developer_id.strip()
@@ -203,6 +213,7 @@ async def get_developer_evidence(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
 
     try:
         all_evidence = skill_repo.get_evidence(cleaned_id, skill_name=skill_name)
@@ -240,7 +251,10 @@ async def get_developer_evidence(
     response_model=dict[str, DeveloperSkill],
     status_code=status.HTTP_200_OK,
 )
-async def get_developer_proficiencies(developer_id: str) -> dict[str, DeveloperSkill]:
+async def get_developer_proficiencies(
+    developer_id: str,
+    current_user: Any = Depends(get_optional_current_user),
+) -> dict[str, DeveloperSkill]:
     """Retrieve all assessed skill proficiencies for a developer."""
     cleaned_id = developer_id.strip()
     if not cleaned_id:
@@ -248,6 +262,7 @@ async def get_developer_proficiencies(developer_id: str) -> dict[str, DeveloperS
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
     profile = skill_tracker.get_profile(cleaned_id)
     return profile.skills
 
@@ -260,6 +275,7 @@ async def get_developer_proficiencies(developer_id: str) -> dict[str, DeveloperS
 async def get_single_skill_proficiency(
     developer_id: str,
     skill_id: str,
+    current_user: Any = Depends(get_optional_current_user),
 ) -> DeveloperSkill:
     """Retrieve current assessed proficiency and reasoning for a single skill."""
     cleaned_id = developer_id.strip()
@@ -269,6 +285,7 @@ async def get_single_skill_proficiency(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID and Skill ID must be non-empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
 
     # Resolve canonical name from graph if available
     node = skill_graph.get_node(cleaned_skill)
@@ -411,9 +428,13 @@ async def get_related_skills(skill_id: str) -> list[str]:
     response_model=list[KnowledgeGap],
     status_code=status.HTTP_200_OK,
 )
-async def perform_gap_analysis(request: SkillGapAnalysisRequest) -> list[KnowledgeGap]:
+async def perform_gap_analysis(
+    request: SkillGapAnalysisRequest,
+    current_user: Any = Depends(get_optional_current_user),
+) -> list[KnowledgeGap]:
     """Analyze developer proficiencies to identify missing prerequisites and concept gaps."""
     cleaned_id = request.developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     target_goal = (request.target_goal or request.target_skill or "").strip()
     target_role = (request.target_role or "").strip()
 
@@ -446,6 +467,7 @@ async def get_developer_gaps(
     target_role: str | None = Query(
         default=None, description="Optional target career role"
     ),
+    current_user: Any = Depends(get_optional_current_user),
 ) -> list[KnowledgeGap]:
     """Fetch current detected knowledge gaps for a developer."""
     cleaned_id = developer_id.strip()
@@ -454,6 +476,7 @@ async def get_developer_gaps(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
 
     profile = skill_tracker.get_profile(cleaned_id)
 
@@ -486,6 +509,7 @@ async def get_developer_recommendations(
     target_role: str | None = Query(
         default=None, description="Optional target career role"
     ),
+    current_user: Any = Depends(get_optional_current_user),
 ) -> list[LearningRecommendation]:
     """Generate prioritized, structured learning recommendations for a developer."""
     cleaned_id = developer_id.strip()
@@ -494,6 +518,7 @@ async def get_developer_recommendations(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
 
     profile = skill_tracker.get_profile(cleaned_id)
 
@@ -530,9 +555,13 @@ async def get_developer_recommendations(
     response_model=LearningPath,
     status_code=status.HTTP_200_OK,
 )
-async def create_learning_path(request: SkillLearningPathRequest) -> LearningPath:
+async def create_learning_path(
+    request: SkillLearningPathRequest,
+    current_user: Any = Depends(get_optional_current_user),
+) -> LearningPath:
     """Generate an ordered, prerequisite-respecting learning path for a skill or role."""
     cleaned_id = request.developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     target_goal = (request.target_goal or "").strip()
     target_role = (request.target_role or "").strip()
 
@@ -563,6 +592,7 @@ async def get_developer_learning_path(
     developer_id: str,
     target_goal: str | None = Query(default=None, description="Target skill goal"),
     target_role: str | None = Query(default=None, description="Target career role"),
+    current_user: Any = Depends(get_optional_current_user),
 ) -> LearningPath:
     """Fetch an ordered learning path for a developer toward a target goal or role."""
     cleaned_id = developer_id.strip()
@@ -571,6 +601,7 @@ async def get_developer_learning_path(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Developer ID cannot be empty",
         )
+    verify_developer_ownership(cleaned_id, current_user)
 
     if not target_goal and not target_role:
         raise HTTPException(

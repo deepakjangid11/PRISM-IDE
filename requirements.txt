@@ -1,39 +1,25 @@
 
-# Local PRISM package
--e .
+# PRISM - AI-Powered Developer Task & Learning Platform Dependencies
+# Synchronized with pyproject.toml (Python >= 3.14)
 
-# API and application server
-fastapi
-uvicorn[standard]
-httpx
-python-multipart
+# Core Framework & Server
+fastapi>=0.162.0
+uvicorn[standard]>=0.54.0
+httpx>=0.28.1
 
-# Configuration and validation
-pydantic-settings
-python-dotenv
+# Configuration & Settings
+pydantic-settings>=2.12.0
 
-# Database and migrations
-sqlalchemy
-alembic
-pymysql
+# Database & Migrations
+sqlalchemy>=2.0.38
+pymysql>=1.1.1
+alembic>=1.14.0
 
-# AI and LLM integration
-openai
-tiktoken
-tenacity
+# Security & Authentication
+cryptography>=44.0.0
 
-# RAG and vector search
-chromadb
-
-# Code and project analysis
-tree-sitter
-tree-sitter-python
-
-# Testing
-pytest
-pytest-cov
-pytest-asyncio
-
-# Code quality and type checking
-ruff
-mypy
+# Development & Testing (Install with: pip install -r requirements.txt)
+pytest>=8.4.2
+pytest-cov>=7.0.0
+ruff>=0.14.4
+mypy>=1.18.2

@@ -67,6 +67,9 @@ class MySQLDeveloperRepository:
                 "developer_id": record.developer_id,
                 "name": record.name,
                 "email": record.email,
+                "password_hash": record.password_hash,
+                "role": record.role,
+                "is_active": record.is_active,
                 "created_at": _ensure_utc(record.created_at),
                 "updated_at": _ensure_utc(record.updated_at),
             }
@@ -85,6 +88,9 @@ class MySQLDeveloperRepository:
                 "developer_id": record.developer_id,
                 "name": record.name,
                 "email": record.email,
+                "password_hash": record.password_hash,
+                "role": record.role,
+                "is_active": record.is_active,
                 "created_at": _ensure_utc(record.created_at),
                 "updated_at": _ensure_utc(record.updated_at),
             }
@@ -126,6 +132,64 @@ class MySQLDeveloperRepository:
                 "created_at": record.created_at,
                 "updated_at": record.updated_at,
             }
+
+    def create_user(
+        self,
+        developer_id: str,
+        email: str,
+        password_hash: str,
+        name: str | None = None,
+        role: str = "developer",
+    ) -> dict[str, Any]:
+        """Create a new authenticated user record."""
+        cleaned_id = developer_id.strip()
+        cleaned_email = email.strip().lower()
+        if not cleaned_id:
+            raise ValueError("Developer ID cannot be empty")
+        if self.get_developer(cleaned_id) is not None:
+            raise ValueError(f"Developer with ID '{cleaned_id}' already exists")
+        if self.get_by_email(cleaned_email) is not None:
+            raise ValueError(f"Developer with email '{cleaned_email}' already exists")
+
+        now = datetime.now(UTC)
+        with session_scope(self.session_factory) as session:
+            record = DeveloperRecord(
+                developer_id=cleaned_id,
+                name=name,
+                email=cleaned_email,
+                password_hash=password_hash,
+                role=role,
+                is_active=True,
+                created_at=now,
+                updated_at=now,
+            )
+            session.add(record)
+            session.flush()
+            return {
+                "developer_id": record.developer_id,
+                "name": record.name,
+                "email": record.email,
+                "password_hash": record.password_hash,
+                "role": record.role,
+                "is_active": record.is_active,
+                "created_at": record.created_at,
+                "updated_at": record.updated_at,
+            }
+
+    def update_password(self, developer_id: str, password_hash: str) -> bool:
+        """Update a developer's password hash."""
+        cleaned_id = developer_id.strip()
+        now = datetime.now(UTC)
+        with session_scope(self.session_factory) as session:
+            stmt = select(DeveloperRecord).where(
+                DeveloperRecord.developer_id == cleaned_id
+            )
+            record = session.scalar(stmt)
+            if record is None:
+                return False
+            record.password_hash = password_hash
+            record.updated_at = now
+            return True
 
     def update_developer(
         self,

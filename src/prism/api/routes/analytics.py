@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from prism.api.dependencies import performance_analytics
 from prism.intelligence.models.developer_intelligence_models import (
@@ -15,6 +16,7 @@ from prism.intelligence.performance_analytics import (
     PerformanceOverview,
     SkillImprovementAnalytics,
 )
+from prism.security import get_optional_current_user, verify_developer_ownership
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +26,15 @@ router = APIRouter(prefix="/analytics", tags=["Performance Analytics"])
 @router.get("/performance/{developer_id}", response_model=PerformanceOverview)
 async def get_performance_overview(
     developer_id: str,
+    current_user: dict[str, Any] | None = Depends(get_optional_current_user),
 ) -> PerformanceOverview:
     """Retrieve comprehensive developer performance snapshot and role readiness."""
+    cleaned_id = developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     try:
-        return performance_analytics.get_overview(developer_id)
+        return performance_analytics.get_overview(cleaned_id)
     except Exception as err:
-        logger.exception("Failed to retrieve performance snapshot for %s", developer_id)
+        logger.exception("Failed to retrieve performance snapshot for %s", cleaned_id)
         raise HTTPException(
             status_code=500,
             detail="Internal server error retrieving performance snapshot",
@@ -39,12 +44,15 @@ async def get_performance_overview(
 @router.get("/improvement/{developer_id}", response_model=SkillImprovementAnalytics)
 async def get_skill_improvement(
     developer_id: str,
+    current_user: dict[str, Any] | None = Depends(get_optional_current_user),
 ) -> SkillImprovementAnalytics:
     """Retrieve skill improvement rates and growth metrics."""
+    cleaned_id = developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     try:
-        return performance_analytics.get_skill_improvement(developer_id)
+        return performance_analytics.get_skill_improvement(cleaned_id)
     except Exception as err:
-        logger.exception("Failed to retrieve skill improvement for %s", developer_id)
+        logger.exception("Failed to retrieve skill improvement for %s", cleaned_id)
         raise HTTPException(
             status_code=500, detail="Internal server error retrieving skill improvement"
         ) from err
@@ -53,12 +61,15 @@ async def get_skill_improvement(
 @router.get("/learning/{developer_id}", response_model=LearningProgressAnalytics)
 async def get_learning_progress(
     developer_id: str,
+    current_user: dict[str, Any] | None = Depends(get_optional_current_user),
 ) -> LearningProgressAnalytics:
     """Retrieve learning trajectory and consistency metrics."""
+    cleaned_id = developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     try:
-        return performance_analytics.get_learning_progress(developer_id)
+        return performance_analytics.get_learning_progress(cleaned_id)
     except Exception as err:
-        logger.exception("Failed to retrieve learning progress for %s", developer_id)
+        logger.exception("Failed to retrieve learning progress for %s", cleaned_id)
         raise HTTPException(
             status_code=500, detail="Internal server error retrieving learning progress"
         ) from err
@@ -70,12 +81,15 @@ async def get_learning_progress(
 async def get_historical_snapshots(
     developer_id: str,
     limit: int = Query(default=10, ge=1, le=50),
+    current_user: dict[str, Any] | None = Depends(get_optional_current_user),
 ) -> list[DeveloperPerformanceSnapshot]:
     """Retrieve historical performance snapshots for longitudinal analysis."""
+    cleaned_id = developer_id.strip()
+    verify_developer_ownership(cleaned_id, current_user)
     try:
-        return performance_analytics.get_historical_snapshots(developer_id, limit=limit)
+        return performance_analytics.get_historical_snapshots(cleaned_id, limit=limit)
     except Exception as err:
-        logger.exception("Failed to retrieve performance history for %s", developer_id)
+        logger.exception("Failed to retrieve performance history for %s", cleaned_id)
         raise HTTPException(
             status_code=500,
             detail="Internal server error retrieving performance history",
