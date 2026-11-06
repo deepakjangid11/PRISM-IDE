@@ -7,8 +7,10 @@ from prism.api.routes.developer import router as developer_router
 from prism.api.routes.feedback import router as feedback_router
 from prism.api.routes.intelligence import router as intelligence_router
 from prism.api.routes.learning import router as learning_router
+from prism.api.routes.llm import router as llm_router
 from prism.api.routes.mentoring import router as mentoring_router
 from prism.api.routes.project import router as project_router
+from prism.api.routes.rag import router as rag_router
 from prism.api.routes.session import router as session_router
 from prism.api.routes.skills import router as skills_router
 from prism.api.routes.tasks import router as tasks_router
@@ -36,6 +38,8 @@ app.include_router(tasks_router)
 app.include_router(analytics_router)
 app.include_router(feedback_router)
 app.include_router(adaptation_router)
+app.include_router(llm_router)
+app.include_router(rag_router)
 
 
 @app.get("/health", tags=["Health"])

@@ -23,6 +23,15 @@ from prism.storage.repositories.mysql_graph_repo import (
 )
 
 
+def _ensure_utc(dt: datetime | None) -> datetime:
+    """Ensure datetime has UTC timezone."""
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
 class MySQLSkillRepository:
     """MySQL-backed repository for skill evidence and developer assessments."""
 
@@ -108,7 +117,7 @@ class MySQLSkillRepository:
                     skill_id=(r.metadata_json or {}).get("skill_id"),
                     evidence_type=r.evidence_type,
                     description=r.description,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                     project_path=r.project_path,
                     programming_language=(r.metadata_json or {}).get(
                         "programming_language"
@@ -200,7 +209,9 @@ class MySQLSkillRepository:
                     evidence_count=r.evidence_count,
                     evidence_list=ev_list,
                     has_sufficient_evidence=r.has_sufficient_evidence,
-                    last_assessed=r.last_assessed,
+                    last_assessed=_ensure_utc(r.last_assessed)
+                    if r.last_assessed
+                    else None,
                 )
                 from prism.intelligence.skill_tracker import SkillTracker
 

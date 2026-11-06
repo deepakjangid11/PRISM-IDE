@@ -122,6 +122,8 @@ class AdaptiveMentorRequest(BaseModel):
     target_skill: str | None = None
     preferred_strategy: MentoringStrategy | None = None
     context_metadata: dict[str, Any] = Field(default_factory=dict)
+    use_llm: bool = True
+    enable_rag: bool = True
 
 
 class AdaptiveMentorResponse(BaseModel):
@@ -139,6 +141,8 @@ class AdaptiveMentorResponse(BaseModel):
     actionable_steps: list[str] = Field(default_factory=list)
     targeted_knowledge_gaps: list[str] = Field(default_factory=list)
     recommended_tasks: list[str] = Field(default_factory=list)
+    retrieved_citations: list[str] = Field(default_factory=list)
+    provider_used: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     def __getitem__(self, item: str) -> Any:
@@ -161,6 +165,8 @@ class MentoringSessionRecord(BaseModel):
     summary: str
     outcome_rating: float | None = None
     outcome_notes: str | None = None
+    provider_used: str | None = None
+    metadata_json: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     def __getitem__(self, item: str) -> Any:

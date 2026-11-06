@@ -1,4 +1,8 @@
+import json
+from collections.abc import AsyncIterator
+
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 
 from prism.api.dependencies import adaptive_mentoring_engine, mentoring_engine
 from prism.exceptions.custom_exception import CustomException
@@ -48,7 +52,7 @@ async def request_adaptive_mentoring(
             request.developer_id,
             request.query[:40],
         )
-        return adaptive_mentoring_engine.request_adaptive_mentoring(request)
+        return await adaptive_mentoring_engine.request_adaptive_mentoring_async(request)
     except ValueError as err:
         logger.warning("Adaptive mentoring validation error: %s", err)
         raise HTTPException(status_code=400, detail=str(err)) from err
@@ -58,6 +62,32 @@ async def request_adaptive_mentoring(
             status_code=500,
             detail="Internal server error generating adaptive mentoring response",
         ) from err
+
+
+@router.post("/adaptive/stream")
+async def stream_adaptive_mentoring(
+    request: AdaptiveMentorRequest,
+) -> StreamingResponse:
+    """Stream an adaptive mentoring response via Server-Sent Events (SSE)."""
+
+    async def event_generator() -> AsyncIterator[str]:
+        try:
+            async for (
+                chunk
+            ) in adaptive_mentoring_engine.request_adaptive_mentoring_stream(request):
+                data = chunk.model_dump_json()
+                yield f"data: {data}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as err:
+            logger.exception("Error during adaptive mentoring stream")
+            error_payload = json.dumps({"error": str(err)})
+            yield f"data: {error_payload}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
+    )
 
 
 @router.get("/history/{developer_id}", response_model=list[MentoringSessionRecord])

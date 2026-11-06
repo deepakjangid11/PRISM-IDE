@@ -20,6 +20,15 @@ from prism.storage.repositories.mysql_graph_repo import (
 )
 
 
+def _ensure_utc(dt: datetime | None) -> datetime:
+    """Ensure datetime has UTC timezone."""
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
 class MySQLLearningRepository:
     """MySQL-backed repository for learning roadmaps, normalized items, and audit history."""
 
@@ -229,7 +238,7 @@ class MySQLLearningRepository:
                     "total_steps": r.total_steps,
                     "completion_percentage": r.completion_percentage,
                     "change_summary": r.change_summary,
-                    "recorded_at": r.recorded_at,
+                    "recorded_at": _ensure_utc(r.recorded_at),
                 }
                 for r, s_name in rows
             ]

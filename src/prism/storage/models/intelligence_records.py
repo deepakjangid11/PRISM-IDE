@@ -155,7 +155,10 @@ class TaskOutcomeRecord(Base):
         DATETIME(fsp=6), nullable=False, index=True
     )
 
-    __table_args__ = (MYSQL_TABLE_ARGS,)
+    __table_args__ = (
+        Index("ix_task_outcomes_dev_time", "developer_id", "recorded_at"),
+        MYSQL_TABLE_ARGS,
+    )
 
 
 class DeveloperFeedbackRecord(Base):
@@ -207,11 +210,18 @@ class MentoringSessionRecordEntity(Base):
     summary: Mapped[str] = mapped_column(String(2048), nullable=False)
     outcome_rating: Mapped[float | None] = mapped_column(Float, nullable=True)
     outcome_notes: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    provider_used: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON, nullable=False, default=dict
+    )
     created_at: Mapped[datetime] = mapped_column(
         DATETIME(fsp=6), nullable=False, index=True
     )
 
-    __table_args__ = (MYSQL_TABLE_ARGS,)
+    __table_args__ = (
+        Index("ix_mentoring_dev_time", "developer_id", "created_at"),
+        MYSQL_TABLE_ARGS,
+    )
 
 
 class LearningAdaptationRecord(Base):

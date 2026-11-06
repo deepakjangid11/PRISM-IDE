@@ -31,11 +31,16 @@ from prism.learning.learning_adaptation_engine import LearningAdaptationEngine
 from prism.learning.learning_path_generator import LearningPathGenerator
 from prism.learning.progress_tracker import LearningProgressTracker
 from prism.learning.recommendation_engine import LearningRecommendationEngine
+from prism.llm.context_builder import LLMContextBuilder
+from prism.llm.service import LLMService
 from prism.logging.logger import get_logger
 from prism.mentoring.adaptive_engine import AdaptiveMentoringEngine
 from prism.mentoring.context_builder import MentorContextBuilder
 from prism.mentoring.engine import MentoringEngine
 from prism.mentoring.response_generator import DeterministicMentorGenerator
+from prism.rag.embeddings import DeterministicEmbeddingProvider
+from prism.rag.service import RAGService
+from prism.rag.vector_store import VectorStore
 from prism.storage.bootstrap import check_db_connection
 from prism.storage.database import get_session_factory
 from prism.storage.repositories.base import (
@@ -258,11 +263,28 @@ adaptation_engine = LearningAdaptationEngine(
     gap_analyzer=gap_analyzer,
 )
 
+# Phase 20 LLM and RAG Services
+llm_service = LLMService()
+llm_context_builder = LLMContextBuilder(
+    intelligence_engine=intelligence_engine,
+    skill_tracker=skill_tracker,
+    gap_analyzer=gap_analyzer,
+    task_engine=task_engine,
+    intelligence_repo=intelligence_repo,
+)
+rag_service = RAGService(
+    embedding_provider=DeterministicEmbeddingProvider(),
+    vector_store=VectorStore(storage_path=settings.rag_storage_path),
+)
+
 adaptive_mentoring_engine = AdaptiveMentoringEngine(
     intelligence_repo=intelligence_repo,
     base_mentor_engine=mentoring_engine,
     intelligence_engine=intelligence_engine,
     task_engine=task_engine,
+    llm_service=llm_service,
+    context_builder=llm_context_builder,
+    rag_service=rag_service,
 )
 
 intelligence_orchestrator = CrossModuleIntelligenceOrchestrator(
@@ -338,3 +360,15 @@ def get_adaptive_mentoring_engine() -> AdaptiveMentoringEngine:
 
 def get_intelligence_orchestrator() -> CrossModuleIntelligenceOrchestrator:
     return intelligence_orchestrator
+
+
+def get_llm_service() -> LLMService:
+    return llm_service
+
+
+def get_llm_context_builder() -> LLMContextBuilder:
+    return llm_context_builder
+
+
+def get_rag_service() -> RAGService:
+    return rag_service

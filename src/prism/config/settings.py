@@ -35,6 +35,27 @@ class Settings(BaseSettings):
     test_db_name: str = "prism_test_db"
     test_database_url_override: str | None = None
 
+    # LLM Provider Configuration (Phase 20)
+    llm_provider: str = "mock"  # Options: "mock", "groq", "openai", "gemini"
+    llm_model: str = ""  # If empty, provider default will be used
+    llm_temperature: float = 0.2
+    llm_max_tokens: int = 2048
+    llm_timeout_seconds: float = 30.0
+    llm_max_retries: int = 3
+    llm_retry_backoff_factor: float = 1.5
+
+    # Provider API Keys (Never log or hardcode)
+    groq_api_key: str = ""
+    openai_api_key: str = ""
+    gemini_api_key: str = ""
+
+    # RAG Configuration (Phase 20)
+    rag_enabled: bool = True
+    rag_chunk_size: int = 500
+    rag_chunk_overlap: int = 100
+    rag_top_k: int = 4
+    rag_storage_path: str = ".prism/rag_store.json"
+
     @property
     def database_url(self) -> str:
         """Construct secure MySQL connection string using PyMySQL driver."""

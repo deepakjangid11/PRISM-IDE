@@ -1,4 +1,6 @@
+import json
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session, sessionmaker
@@ -35,6 +37,47 @@ from prism.storage.models.intelligence_records import (
 from prism.storage.repositories.mysql_developer_repo import (
     MySQLDeveloperRepository,
 )
+
+
+def _ensure_utc(dt: datetime | None) -> datetime:
+    """Ensure datetime has UTC timezone."""
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
+def _parse_json_list(val: Any) -> list[Any]:
+    """Defensively parse JSON value as list."""
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return val
+    if isinstance(val, str):
+        try:
+            parsed = json.loads(val)
+            if isinstance(parsed, list):
+                return parsed
+        except json.JSONDecodeError, ValueError, TypeError:
+            return []
+    return list(val) if hasattr(val, "__iter__") else []
+
+
+def _parse_json_dict(val: Any) -> dict[str, Any]:
+    """Defensively parse JSON value as dict."""
+    if val is None:
+        return {}
+    if isinstance(val, dict):
+        return val
+    if isinstance(val, str):
+        try:
+            parsed = json.loads(val)
+            if isinstance(parsed, dict):
+                return parsed
+        except json.JSONDecodeError, ValueError, TypeError:
+            return {}
+    return dict(val) if hasattr(val, "items") else {}
 
 
 class MySQLIntelligenceRepository:
@@ -97,10 +140,10 @@ class MySQLIntelligenceRepository:
                     title=r.title,
                     description=r.description,
                     severity=InsightSeverity(r.severity),
-                    evidence=list(r.evidence_json or []),
-                    supporting_skills=list(r.supporting_skills_json or []),
+                    evidence=_parse_json_list(r.evidence_json),
+                    supporting_skills=_parse_json_list(r.supporting_skills_json),
                     actionable_recommendation=r.actionable_recommendation,
-                    timestamp=r.created_at,
+                    timestamp=_ensure_utc(r.created_at),
                 )
                 for r in records
             ]
@@ -148,7 +191,7 @@ class MySQLIntelligenceRepository:
                 DeveloperPerformanceSnapshot(
                     snapshot_id=r.snapshot_id,
                     developer_id=r.developer_id,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                     total_activities=r.total_activities,
                     verified_skills_count=r.verified_skills_count,
                     average_proficiency_score=r.average_proficiency_score,
@@ -156,7 +199,7 @@ class MySQLIntelligenceRepository:
                     tasks_completed_count=r.tasks_completed_count,
                     task_success_rate=r.task_success_rate,
                     learning_consistency_score=r.learning_consistency_score,
-                    role_readiness_scores=dict(r.role_readiness_json or {}),
+                    role_readiness_scores=_parse_json_dict(r.role_readiness_json),
                 )
                 for r in records
             ]
@@ -218,11 +261,11 @@ class MySQLIntelligenceRepository:
                 status=TaskStatus(record.status),
                 estimated_minutes=record.estimated_minutes,
                 target_role=record.target_role,
-                prerequisite_skills=list(record.prerequisite_skills_json or []),
+                prerequisite_skills=_parse_json_list(record.prerequisite_skills_json),
                 reason=record.reason,
-                acceptance_criteria=list(record.acceptance_criteria_json or []),
-                created_at=record.created_at,
-                updated_at=record.updated_at,
+                acceptance_criteria=_parse_json_list(record.acceptance_criteria_json),
+                created_at=_ensure_utc(record.created_at),
+                updated_at=_ensure_utc(record.updated_at),
             )
 
     def get_tasks_for_developer(
@@ -260,25 +303,29 @@ class MySQLIntelligenceRepository:
                     status=TaskStatus(r.status),
                     estimated_minutes=r.estimated_minutes,
                     target_role=r.target_role,
-                    prerequisite_skills=list(r.prerequisite_skills_json or []),
+                    prerequisite_skills=_parse_json_list(r.prerequisite_skills_json),
                     reason=r.reason,
-                    acceptance_criteria=list(r.acceptance_criteria_json or []),
-                    created_at=r.created_at,
-                    updated_at=r.updated_at,
+                    acceptance_criteria=_parse_json_list(r.acceptance_criteria_json),
+                    created_at=_ensure_utc(r.created_at),
+                    updated_at=_ensure_utc(r.updated_at),
                 )
                 for r in records
             ]
 
-    def update_task_status(self, task_id: str, status: str) -> PersonalizedTask | None:
-        """Update task lifecycle status."""
-        cleaned_status = status.strip().lower()
+    def update_task_status(
+        self, task_id: str, status: TaskStatus | str
+    ) -> PersonalizedTask | None:
+        """Update task status with timestamp refresh."""
         now = datetime.now(UTC)
+        status_str = status.value if hasattr(status, "value") else str(status)
+
         with session_scope(self.session_factory) as session:
             record = session.get(PersonalizedTaskRecord, task_id.strip())
             if not record:
                 return None
-            record.status = cleaned_status
+            record.status = status_str
             record.updated_at = now
+            session.commit()
             return PersonalizedTask(
                 task_id=record.task_id,
                 developer_id=record.developer_id,
@@ -290,11 +337,11 @@ class MySQLIntelligenceRepository:
                 status=TaskStatus(record.status),
                 estimated_minutes=record.estimated_minutes,
                 target_role=record.target_role,
-                prerequisite_skills=list(record.prerequisite_skills_json or []),
+                prerequisite_skills=_parse_json_list(record.prerequisite_skills_json),
                 reason=record.reason,
-                acceptance_criteria=list(record.acceptance_criteria_json or []),
-                created_at=record.created_at,
-                updated_at=record.updated_at,
+                acceptance_criteria=_parse_json_list(record.acceptance_criteria_json),
+                created_at=_ensure_utc(record.created_at),
+                updated_at=_ensure_utc(record.updated_at),
             )
 
     # =========================================================================
@@ -335,8 +382,8 @@ class MySQLIntelligenceRepository:
                     developer_id=r.developer_id,
                     success=r.success,
                     execution_notes=r.execution_notes,
-                    verified_artifacts=list(r.verified_artifacts_json or []),
-                    recorded_at=r.recorded_at,
+                    verified_artifacts=_parse_json_list(r.verified_artifacts_json),
+                    recorded_at=_ensure_utc(r.recorded_at),
                 )
                 for r in records
             ]
@@ -386,10 +433,10 @@ class MySQLIntelligenceRepository:
                     related_skill=r.related_skill,
                     category=FeedbackCategory(r.category),
                     message=r.message,
-                    supporting_evidence=list(r.supporting_evidence_json or []),
+                    supporting_evidence=_parse_json_list(r.supporting_evidence_json),
                     recommended_next_action=r.recommended_next_action,
                     confidence_level=r.confidence_level,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                 )
                 for r in records
             ]
@@ -413,6 +460,8 @@ class MySQLIntelligenceRepository:
                 summary=session.summary,
                 outcome_rating=session.outcome_rating,
                 outcome_notes=session.outcome_notes,
+                provider_used=session.provider_used,
+                metadata_json=session.metadata_json or {},
                 created_at=session.created_at,
             )
             session_scope_ctx.merge(record)
@@ -442,7 +491,9 @@ class MySQLIntelligenceRepository:
                     summary=r.summary,
                     outcome_rating=r.outcome_rating,
                     outcome_notes=r.outcome_notes,
-                    created_at=r.created_at,
+                    provider_used=r.provider_used,
+                    metadata_json=_parse_json_dict(r.metadata_json),
+                    created_at=_ensure_utc(r.created_at),
                 )
                 for r in records
             ]
@@ -493,9 +544,9 @@ class MySQLIntelligenceRepository:
                     new_strategy=LearningStrategyType(r.new_strategy),
                     adaptation_reason=r.adaptation_reason,
                     adjusted_difficulty=TaskDifficulty(r.adjusted_difficulty),
-                    adjusted_priorities=dict(r.adjusted_priorities_json or {}),
-                    stalled_skills_detected=list(r.stalled_skills_json or []),
-                    timestamp=r.timestamp,
+                    adjusted_priorities=_parse_json_dict(r.adjusted_priorities_json),
+                    stalled_skills_detected=_parse_json_list(r.stalled_skills_json),
+                    timestamp=_ensure_utc(r.timestamp),
                 )
                 for r in records
             ]

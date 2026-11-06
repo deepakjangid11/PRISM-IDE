@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from prism.intelligence.developer_intelligence_engine import DeveloperIntelligenceEngine
 from prism.intelligence.intelligent_feedback_engine import IntelligentFeedbackEngine
@@ -17,8 +17,10 @@ from prism.intelligence.models.developer_behavior_models import DeveloperActivit
 from prism.intelligence.performance_analytics import DeveloperPerformanceAnalytics
 from prism.intelligence.task_recommendation_engine import TaskRecommendationEngine
 from prism.learning.learning_adaptation_engine import LearningAdaptationEngine
-from prism.mentoring.adaptive_engine import AdaptiveMentoringEngine
 from prism.storage.repositories.base import IntelligenceRepository
+
+if TYPE_CHECKING:
+    from prism.mentoring.adaptive_engine import AdaptiveMentoringEngine
 
 logger = logging.getLogger(__name__)
 

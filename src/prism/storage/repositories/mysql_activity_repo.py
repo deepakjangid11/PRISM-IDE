@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -9,6 +11,15 @@ from prism.storage.models.activity_records import DeveloperActivityRecord
 from prism.storage.repositories.mysql_developer_repo import (
     MySQLDeveloperRepository,
 )
+
+
+def _ensure_utc(dt: datetime | None) -> datetime:
+    """Ensure datetime has UTC timezone."""
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 class MySQLActivityRepository:
@@ -85,7 +96,7 @@ class MySQLActivityRepository:
                     developer_id=r.developer_id,
                     project_path=r.project_path,
                     event_type=r.event_type,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                     file_path=r.file_path,
                     session_id=r.session_id,
                     metadata=dict(r.metadata_json or {}),
@@ -127,7 +138,7 @@ class MySQLActivityRepository:
                     developer_id=r.developer_id,
                     project_path=r.project_path,
                     event_type=r.event_type,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                     file_path=r.file_path,
                     session_id=r.session_id,
                     metadata=dict(r.metadata_json or {}),
@@ -174,7 +185,7 @@ class MySQLActivityRepository:
                     developer_id=r.developer_id,
                     project_path=r.project_path,
                     event_type=r.event_type,
-                    timestamp=r.timestamp,
+                    timestamp=_ensure_utc(r.timestamp),
                     file_path=r.file_path,
                     session_id=r.session_id,
                     metadata=dict(r.metadata_json or {}),

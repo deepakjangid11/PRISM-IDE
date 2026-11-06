@@ -297,3 +297,111 @@ def test_api_validation_errors() -> None:
         "/skills/learning-path", json={"developer_id": "dev1"}
     )
     assert res_missing_path.status_code == 400
+
+
+def test_api_skills_error_and_edge_branches() -> None:
+    from unittest.mock import patch
+
+    from prism.api.dependencies import (
+        gap_analyzer,
+        path_generator,
+        rec_engine,
+        skill_repo,
+        skill_tracker,
+    )
+
+    client = TestClient(app)
+
+    # 1. Empty developer_id validation across endpoints
+    assert client.get("/skills/evidence/%20").status_code == 400
+    assert client.get("/skills/proficiency/%20").status_code == 400
+    assert client.get("/skills/proficiency/dev_test/%20").status_code == 400
+    assert client.get("/skills/gaps/%20").status_code == 400
+    assert client.get("/skills/recommendations/%20").status_code == 400
+    assert (
+        client.get("/skills/learning-path/%20?target_goal=FastAPI").status_code == 400
+    )
+    assert client.get("/skills/learning-path/dev_test").status_code == 400
+
+    # 2. POST /skills/evidence error branches
+    valid_payload = {
+        "developer_id": "dev_test",
+        "skill_name": "Python",
+        "description": "Code contribution",
+        "evidence_type": "implementation",
+    }
+    with patch.object(
+        skill_tracker, "record_evidence", side_effect=ValueError("Invalid skill name")
+    ):
+        assert client.post("/skills/evidence", json=valid_payload).status_code == 400
+
+    with patch.object(
+        skill_tracker, "record_evidence", side_effect=RuntimeError("Storage crash")
+    ):
+        assert client.post("/skills/evidence", json=valid_payload).status_code == 500
+
+    # 3. GET /skills/profile/{dev} error branches
+    with patch.object(
+        skill_tracker, "get_profile", side_effect=ValueError("Bad dev id")
+    ):
+        assert client.get("/skills/profile/dev_test").status_code == 400
+
+    with patch.object(
+        skill_tracker, "get_profile", side_effect=RuntimeError("Database failure")
+    ):
+        assert client.get("/skills/profile/dev_test").status_code == 500
+
+    # 4. Error branches across skills GET routes
+    with patch.object(
+        skill_repo, "get_evidence", side_effect=RuntimeError("Repo failure")
+    ):
+        assert client.get("/skills/evidence/dev_test").status_code == 500
+
+    with patch.object(
+        gap_analyzer, "identify_gaps", side_effect=ValueError("Invalid gap query")
+    ):
+        assert (
+            client.get("/skills/gaps/dev_test?target_goal=FastAPI").status_code == 400
+        )
+        assert (
+            client.post(
+                "/skills/gap-analysis",
+                json={"developer_id": "dev_test", "target_goal": "FastAPI"},
+            ).status_code
+            == 400
+        )
+
+    with patch.object(
+        rec_engine, "generate_recommendations", side_effect=ValueError("Rec error")
+    ):
+        assert (
+            client.get(
+                "/skills/recommendations/dev_test?target_goal=FastAPI"
+            ).status_code
+            == 400
+        )
+
+    with patch.object(
+        path_generator, "generate_path", side_effect=ValueError("Path error")
+    ):
+        assert (
+            client.get("/skills/learning-path/dev_test?target_goal=FastAPI").status_code
+            == 400
+        )
+        assert (
+            client.post(
+                "/skills/learning-path",
+                json={"developer_id": "dev_test", "target_goal": "FastAPI"},
+            ).status_code
+            == 400
+        )
+
+    # 5. Fallback in GET /skills/evidence/{dev_id} when skill_repo returns empty
+    with patch.object(skill_repo, "get_evidence", return_value=[]):
+        assert client.get("/skills/evidence/dev_test").status_code == 200
+        assert (
+            client.get("/skills/evidence/dev_test?skill_name=python").status_code == 200
+        )
+
+    # 6. /skills/graph/{skill_id} 404 on missing
+    assert client.get("/skills/graph/non_existent_skill_xyz").status_code == 404
