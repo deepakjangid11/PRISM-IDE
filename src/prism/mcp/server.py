@@ -20,26 +20,22 @@ logger = get_logger(__name__)
 async def run_stdio_server() -> None:
     """Run standard line-delimited JSON-RPC 2.0 loop over stdin/stdout."""
     protocol_handler = MCPProtocolHandler(mcp_service)
-    loop = asyncio.get_running_loop()
-
-    reader = asyncio.StreamReader()
-    protocol = asyncio.StreamReaderProtocol(reader)
-    await loop.connect_read_pipe(lambda: protocol, sys.stdin)
 
     while True:
-        line_bytes = await reader.readline()
-        if not line_bytes:
+        line = await asyncio.to_thread(sys.stdin.readline)
+        if not line:
             break
 
-        line = line_bytes.decode("utf-8").strip()
+        line = line.strip()
         if not line:
             continue
 
         try:
             req_data = json.loads(line)
             response = await protocol_handler.handle_request(req_data)
-            sys.stdout.write(json.dumps(response) + "\n")
-            sys.stdout.flush()
+            if response is not None:
+                sys.stdout.write(json.dumps(response) + "\n")
+                sys.stdout.flush()
         except json.JSONDecodeError as err:
             err_resp = {
                 "jsonrpc": "2.0",

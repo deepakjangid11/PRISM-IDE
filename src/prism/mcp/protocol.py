@@ -17,6 +17,7 @@ from prism.mcp.service import MCPService, MCPToolDefinition
 logger = get_logger(__name__)
 
 MCP_PROTOCOL_VERSION = "2024-11-05"
+SUPPORTED_PROTOCOL_VERSIONS: frozenset[str] = frozenset({"2024-11-05"})
 SERVER_NAME = "prism-mcp-server"
 SERVER_VERSION = "0.1.0"
 
@@ -68,13 +69,21 @@ class MCPProtocolHandler:
         self,
         request_dict: dict[str, Any],
         caller_id: str | None = None,
-    ) -> dict[str, Any]:
-        """Process a standard MCP JSON-RPC 2.0 request and return a standard response."""
+    ) -> dict[str, Any] | None:
+        """Process a standard MCP JSON-RPC 2.0 request or notification.
+
+        Returns a JSON-RPC response dictionary for normal requests, or None
+        if the incoming message is a valid JSON-RPC 2.0 notification (omitted ID).
+        """
         req_id = request_dict.get("id")
+        is_notification = "id" not in request_dict
         method = request_dict.get("method")
         params = request_dict.get("params") or {}
 
         if not method or not isinstance(method, str):
+            if is_notification:
+                logger.warning("Received invalid MCP notification without method")
+                return None
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,
@@ -87,12 +96,25 @@ class MCPProtocolHandler:
         try:
             # 1. MCP initialize handshake
             if method == "initialize":
-                client_version = params.get("protocolVersion", MCP_PROTOCOL_VERSION)
+                requested_version = params.get("protocolVersion")
+                if requested_version in SUPPORTED_PROTOCOL_VERSIONS:
+                    protocol_version = requested_version
+                else:
+                    logger.info(
+                        "Client requested unsupported or missing MCP protocolVersion '%s'; returning supported '%s'",
+                        requested_version,
+                        MCP_PROTOCOL_VERSION,
+                    )
+                    protocol_version = MCP_PROTOCOL_VERSION
+
+                if is_notification:
+                    return None
+
                 return {
                     "jsonrpc": "2.0",
                     "id": req_id,
                     "result": {
-                        "protocolVersion": client_version,
+                        "protocolVersion": protocol_version,
                         "capabilities": {
                             "tools": {"listChanged": False},
                             "logging": {},
@@ -107,16 +129,22 @@ class MCPProtocolHandler:
             # 2. MCP initialized notification
             if method == "notifications/initialized":
                 logger.info("MCP client handshake initialized successfully")
+                if is_notification:
+                    return None
                 return {"jsonrpc": "2.0", "id": req_id, "result": {}}
 
             # 3. MCP ping
             if method == "ping":
+                if is_notification:
+                    return None
                 return {"jsonrpc": "2.0", "id": req_id, "result": {}}
 
             # 4. MCP tools/list
             if method == "tools/list":
                 tools = self.mcp_service.list_tools()
                 formatted_tools = [self._convert_tool_to_json_schema(t) for t in tools]
+                if is_notification:
+                    return None
                 return {
                     "jsonrpc": "2.0",
                     "id": req_id,
@@ -129,6 +157,11 @@ class MCPProtocolHandler:
                 arguments = params.get("arguments") or {}
 
                 if not tool_name or not isinstance(tool_name, str):
+                    if is_notification:
+                        logger.warning(
+                            "Invalid notification params: 'name' is required for tools/call"
+                        )
+                        return None
                     return {
                         "jsonrpc": "2.0",
                         "id": req_id,
@@ -143,6 +176,9 @@ class MCPProtocolHandler:
                     arguments=arguments,
                     caller_id=caller_id,
                 )
+
+                if is_notification:
+                    return None
 
                 if exec_result.status == "success":
                     text_content = (
@@ -174,8 +210,17 @@ class MCPProtocolHandler:
                         },
                     }
 
+            # 6. Generic notifications handler
+            if method.startswith("notifications/"):
+                logger.info("Received MCP notification '%s'", method)
+                if is_notification:
+                    return None
+                return {"jsonrpc": "2.0", "id": req_id, "result": {}}
+
             # Method not recognized
             logger.warning("Unrecognized MCP method requested: %s", method)
+            if is_notification:
+                return None
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,
@@ -187,6 +232,8 @@ class MCPProtocolHandler:
 
         except Exception as e:
             logger.exception("Error handling MCP JSON-RPC method '%s'", method)
+            if is_notification:
+                return None
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,

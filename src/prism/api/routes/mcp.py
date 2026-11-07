@@ -1,6 +1,8 @@
+import json
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from prism.api.dependencies import mcp_service, task_platform_repo
@@ -49,24 +51,46 @@ async def execute_mcp_tool(
 async def handle_mcp_jsonrpc(
     request: Request,
     current_user: dict[str, Any] | None = Depends(get_optional_current_user),
-) -> dict[str, Any]:
+) -> Response:
     """Standard Model Context Protocol (MCP) JSON-RPC 2.0 endpoint.
 
     Supports official MCP methods: initialize, notifications/initialized, ping,
     tools/list, and tools/call.
     """
-    body = await request.json()
-    if not isinstance(body, dict):
-        return {
-            "jsonrpc": "2.0",
-            "id": None,
-            "error": {
-                "code": -32600,
-                "message": "Invalid Request: must be a JSON object",
+    try:
+        body = await request.json()
+    except (json.JSONDecodeError, ValueError):
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {
+                    "code": -32700,
+                    "message": "Parse error: Invalid JSON was received",
+                },
             },
-        }
+        )
+
+    if not isinstance(body, dict):
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {
+                    "code": -32600,
+                    "message": "Invalid Request: must be a JSON object",
+                },
+            },
+        )
+
     caller_id = current_user.get("sub") if current_user else None
-    return await _protocol_handler.handle_request(body, caller_id=caller_id)
+    result = await _protocol_handler.handle_request(body, caller_id=caller_id)
+    if result is None:
+        return Response(status_code=status.HTTP_202_ACCEPTED)
+
+    return JSONResponse(status_code=status.HTTP_200_OK, content=result)
 
 
 @router.get("/audit", response_model=list[MCPAuditLog])

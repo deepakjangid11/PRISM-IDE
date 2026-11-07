@@ -21,8 +21,8 @@ def get_logger(name: str) -> logging.Logger:
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(LOG_FORMAT)
 
-    # 1. Console Handler (always available)
-    console_handler = logging.StreamHandler(sys.stdout)
+    # 1. Console Handler (always available - streams to stderr so stdout is clean for MCP JSON-RPC stdio)
+    console_handler = logging.StreamHandler(sys.stderr)
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
